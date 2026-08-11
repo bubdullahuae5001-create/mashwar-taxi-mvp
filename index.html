@@ -2,89 +2,621 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07090d">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#080b0f">
+
   <title>مشوار | اطلب سيارة بسهولة</title>
+
   <link rel="stylesheet" href="home.css">
 </head>
+
 <body class="home-page">
-<header class="site-header">
-  <div class="container nav">
-    <a class="brand" href="index.html">
-      <span class="brand-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11l1.7-4.2A2 2 0 0 1 8.6 5h6.8a2 2 0 0 1 1.9 1.8L19 11m-14 0h14a2 2 0 0 1 2 2v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4a2 2 0 0 1 2-2Zm2-1h10l-1.2-3H8.2L7 10Zm0 5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm10 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/></svg></span>
-      <span><b id="appName">مشوار</b><small>اطلب سيارة بكل سهولة</small></span>
-    </a>
-    <nav class="nav-links">
-      <a class="home-link" href="index.html">⌂ الرئيسية</a>
-      <a class="admin-btn" href="admin.html">♙ لوحة الإدارة</a>
-    </nav>
-  </div>
-</header>
 
-<main>
-  <section class="hero">
-    <div class="hero-media"></div>
-    <div class="hero-shade"></div>
-    <div class="container hero-content">
-      <div class="hero-copy">
-        <h1>اطلب سيارة<br><span>بسهولة</span></h1>
-        <p>خدمة طلب سيارة آمنة وسريعة في أي وقت</p>
-        <div class="hero-badges"><span>⚡ سريع</span><span>🛡 آمن</span><span>◷ متاح 24/7</span></div>
-      </div>
+  <!-- =========================
+       الشريط العلوي
+  ========================== -->
+  <header class="site-header">
+    <div class="container nav">
+
+      <a class="brand" href="index.html">
+        <span class="brand-icon">🚕</span>
+
+        <span class="brand-text">
+          <strong id="appName">مشوار</strong>
+          <small>خدمة سيارات الأجرة - أم القيوين</small>
+        </span>
+      </a>
+
+      <nav class="nav-links">
+
+        <div class="language-switcher">
+          <button type="button" data-lang="ar">عربي</button>
+          <button type="button" data-lang="en">EN</button>
+          <button type="button" data-lang="ur">اردو</button>
+        </div>
+
+        <a href="index.html">
+          الرئيسية
+        </a>
+
+        <a href="track.html">
+          تتبع الطلب
+        </a>
+
+        <a class="driver-register-link" href="driver.html">
+          تسجيل سائق
+        </a>
+
+        <a class="admin-btn" href="admin.html">
+          لوحة الإدارة
+        </a>
+
+      </nav>
     </div>
-  </section>
+  </header>
 
-  <section class="booking-section">
-    <div class="container">
-      <section class="booking-card" id="requestCard">
-        <div class="booking-title"><span class="mini-car">⌁</span><h2>احجز رحلتك الآن</h2></div>
-        <form id="rideForm" novalidate>
-          <div class="top-fields">
-            <div class="field">
-              <label for="customerName">اسم العميل</label>
-              <div class="input-wrap"><input id="customerName" name="customerName" autocomplete="name" placeholder="أدخل اسمك الكامل" required><span>●</span></div>
-            </div>
-            <div class="field">
-              <label for="pickup">موقع الانطلاق</label>
-              <div class="input-wrap"><input id="pickup" name="pickup" placeholder="مثال: الخالدية - أم القيوين" required><span>⌖</span></div>
-            </div>
-            <div class="field">
-              <label for="destination">الوجهة</label>
-              <div class="input-wrap"><input id="destination" name="destination" placeholder="مثال: كورنيش أم القيوين" required><span>⌖</span></div>
-            </div>
+
+  <main>
+
+    <!-- =========================
+         الواجهة الرئيسية
+    ========================== -->
+    <section class="hero">
+
+      <div class="hero-media"></div>
+      <div class="hero-overlay"></div>
+
+      <div class="container hero-content">
+
+        <div class="hero-copy">
+
+          <div class="location-label">
+            أم القيوين
           </div>
 
-          <div class="second-row">
-            <fieldset class="field time-field"><legend>وقت الطلب</legend><div class="segmented"><label><input type="radio" name="timeType" value="now" checked><span>◉ الآن</span></label><label><input type="radio" name="timeType" value="later"><span>◷ لاحقًا</span></label></div></fieldset>
-            <div class="field"><label for="phone">رقم الهاتف</label><div class="input-wrap"><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="05xxxxxxxx" required><span>☎</span></div></div>
-            <div class="field"><label for="passengers">عدد الركاب</label><div class="input-wrap"><select id="passengers" name="passengers"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select><span>●</span></div></div>
+          <h1>
+            اطلب سيارة
+            <span>بسهولة</span>
+          </h1>
+
+          <p>
+            خدمة طلب سيارة آمنة وسريعة في إمارة أم القيوين
+          </p>
+
+          <div class="hero-badges">
+
+            <span>
+              ⚡ سريع
+            </span>
+
+            <span>
+              🛡 آمن
+            </span>
+
+            <span>
+              ◷ متاح 24/7
+            </span>
+
           </div>
 
-          <div class="field hidden" id="laterWrap"><label for="scheduledAt">حدد الوقت</label><input class="plain-input" id="scheduledAt" name="scheduledAt" type="datetime-local"></div>
-          <div class="field"><label for="notes">ملاحظات اختيارية</label><div class="input-wrap"><textarea id="notes" name="notes" rows="3" placeholder="أي تفاصيل إضافية..."></textarea><span class="note-icon">▰</span></div></div>
-          <div id="formError" class="alert error hidden" role="alert"></div>
-          <button class="primary big" type="submit"><span class="btn-car">▰</span> إرسال طلب سيارة</button>
-        </form>
-      </section>
-    </div>
-  </section>
+        </div>
 
-  <section class="why-section">
-    <div class="container">
-      <h2>لماذا تختار مشوار؟</h2><div class="accent-line"></div>
-      <div class="benefits">
-        <article><div class="benefit-icon">⚡</div><h3>سريع وفعال</h3><p>استجابة سريعة في أي وقت</p></article>
-        <article><div class="benefit-icon">🛡</div><h3>آمن وموثوق</h3><p>رحلات آمنة مع سائقين موثوقين</p></article>
-        <article><div class="benefit-icon">🎧</div><h3>دعم على مدار الساعة</h3><p>فريق الدعم متاح لخدمتك</p></article>
       </div>
-      <div class="skyline"><img src="uaq-skyline.png" alt="معالم أم القيوين"></div>
+    </section>
+
+
+    <!-- =========================
+         نموذج طلب السيارة
+    ========================== -->
+    <section class="booking-section">
+
+      <div class="container">
+
+        <section class="booking-card">
+
+          <div class="booking-title">
+
+            <span class="booking-icon">
+              🚕
+            </span>
+
+            <div>
+              <h2>احجز رحلتك الآن</h2>
+              <p>أدخل بيانات الرحلة وسيتم إرسال الطلب.</p>
+            </div>
+
+          </div>
+
+
+          <form id="rideForm" novalidate>
+
+            <!-- الصف الأول -->
+
+            <div class="form-grid three">
+
+              <div class="field">
+
+                <label for="customerName">
+                  اسم العميل
+                </label>
+
+                <input
+                  id="customerName"
+                  name="customerName"
+                  type="text"
+                  autocomplete="name"
+                  placeholder="أدخل اسمك الكامل"
+                  required
+                >
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="pickup">
+                  موقع الانطلاق
+                </label>
+
+                <input
+                  id="pickup"
+                  name="pickup"
+                  type="text"
+                  placeholder="مثال: السلمة - أم القيوين"
+                  required
+                >
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="destination">
+                  الوجهة
+                </label>
+
+                <input
+                  id="destination"
+                  name="destination"
+                  type="text"
+                  placeholder="مثال: كورنيش أم القيوين"
+                  required
+                >
+
+              </div>
+
+            </div>
+
+
+            <!-- الصف الثاني -->
+
+            <div class="form-grid three">
+
+              <div class="field">
+
+                <label>
+                  وقت الطلب
+                </label>
+
+                <div class="time-options">
+
+                  <label class="time-option">
+
+                    <input
+                      type="radio"
+                      name="timeType"
+                      value="now"
+                      checked
+                    >
+
+                    <span>
+                      الآن
+                    </span>
+
+                  </label>
+
+
+                  <label class="time-option">
+
+                    <input
+                      type="radio"
+                      name="timeType"
+                      value="later"
+                    >
+
+                    <span>
+                      لاحقًا
+                    </span>
+
+                  </label>
+
+                </div>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="phone">
+                  رقم الهاتف
+                </label>
+
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  inputmode="tel"
+                  autocomplete="tel"
+                  dir="ltr"
+                  placeholder="05xxxxxxxx"
+                  required
+                >
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="passengers">
+                  عدد الركاب
+                </label>
+
+                <select
+                  id="passengers"
+                  name="passengers"
+                >
+
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+
+            <!-- الوقت اللاحق -->
+
+            <div
+              class="field hidden"
+              id="laterWrap"
+            >
+
+              <label for="scheduledAt">
+                حدد موعد الرحلة
+              </label>
+
+              <input
+                id="scheduledAt"
+                name="scheduledAt"
+                type="datetime-local"
+              >
+
+            </div>
+
+
+            <!-- الملاحظات -->
+
+            <div class="field">
+
+              <label for="notes">
+                ملاحظات اختيارية
+              </label>
+
+              <textarea
+                id="notes"
+                name="notes"
+                rows="3"
+                placeholder="مثال: معي حقيبتان..."
+              ></textarea>
+
+            </div>
+
+
+            <div
+              id="formError"
+              class="form-error hidden"
+              role="alert"
+            ></div>
+
+
+            <button
+              class="primary-submit"
+              type="submit"
+            >
+
+              🚕
+              إرسال طلب سيارة
+
+            </button>
+
+          </form>
+
+        </section>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         المميزات
+    ========================== -->
+
+    <section class="why-section">
+
+      <div class="container">
+
+        <div class="section-heading">
+
+          <h2>
+            لماذا تختار مشوار؟
+          </h2>
+
+          <span></span>
+
+        </div>
+
+
+        <div class="benefits">
+
+          <article>
+
+            <div class="benefit-icon">
+              ⚡
+            </div>
+
+            <h3>
+              سريع وفعال
+            </h3>
+
+            <p>
+              إرسال الطلب إلى السائقين المتاحين
+              بصورة تلقائية.
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <div class="benefit-icon">
+              🛡
+            </div>
+
+            <h3>
+              سائقون ومركبات معتمدة
+            </h3>
+
+            <p>
+              يتم التحقق من بيانات السائق
+              والمركبة قبل تفعيل الحساب.
+            </p>
+
+          </article>
+
+
+          <article>
+
+            <div class="benefit-icon">
+              📱
+            </div>
+
+            <h3>
+              بدون تطبيق
+            </h3>
+
+            <p>
+              اطلب السيارة وتابع طلبك
+              مباشرة من الموقع.
+            </p>
+
+          </article>
+
+        </div>
+
+
+        <div class="uaq-landmarks">
+
+          <img
+            src="uaq-skyline.png"
+            alt="معالم إمارة أم القيوين"
+          >
+
+          <strong>
+            نخدم أهل أم القيوين
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- =========================
+       أسفل الصفحة
+  ========================== -->
+
+  <footer class="site-footer">
+
+    <div class="container footer-content">
+
+      <div>
+
+        <h3>
+          🚕 مشوار
+        </h3>
+
+        <p>
+          خدمة طلب سيارات الأجرة
+          في إمارة أم القيوين.
+        </p>
+
+      </div>
+
+
+      <div>
+
+        <h4>
+          الخدمات
+        </h4>
+
+        <a href="index.html">
+          طلب سيارة
+        </a>
+
+        <a href="track.html">
+          تتبع الطلب
+        </a>
+
+        <a href="driver.html">
+          تسجيل سائق
+        </a>
+
+      </div>
+
+
+      <div>
+
+        <h4>
+          للسائقين
+        </h4>
+
+        <p>
+          أنشئ حسابك وأضف بيانات
+          السائق والمركبة واستقبل الطلبات.
+        </p>
+
+      </div>
+
     </div>
-  </section>
-</main>
 
-<footer class="footer"><div class="container footer-box"><div class="footer-col brand-footer"><div class="footer-brand"><span class="footer-car">▰</span><b>مشوار</b></div><p>خدمة طلب سيارة آمنة وسريعة<br>في أي وقت وأي مكان</p></div><div class="footer-col"><h4>روابط سريعة</h4><a href="index.html">الرئيسية</a><a href="#">عن الخدمة</a><a href="#">الشروط والأحكام</a><a href="#">سياسة الخصوصية</a></div><div class="footer-col"><h4>تواصل معنا</h4><p>✉ info@mashwar.ae</p><p>☎ +971 50 123 4567</p><div class="socials"><span>◉</span><span>◎</span><span>𝕏</span></div></div></div><div class="copyright">© 2026 مشوار - جميع الحقوق محفوظة</div></footer>
 
-<dialog id="confirmDialog"><div class="dialog-card"><h2>تأكيد الطلب</h2><div id="summary" class="summary"></div><div class="dialog-actions"><button id="cancelConfirm" class="secondary" type="button">تعديل</button><button id="confirmRequest" class="primary" type="button">تأكيد الطلب</button></div></div></dialog>
-<dialog id="successDialog"><div class="dialog-card center"><div class="success-icon">✓</div><h2>تم استلام طلبك</h2><p>سيتم التواصل معك لتأكيد السيارة.</p><div class="order-box">رقم الطلب <strong id="orderNumber"></strong></div><button id="newRequest" class="primary big" type="button">طلب جديد</button></div></dialog>
-<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script>
-</body></html>
+    <div class="copyright">
+      © 2026 مشوار
+    </div>
+
+  </footer>
+
+
+  <!-- =========================
+       تأكيد الطلب
+  ========================== -->
+
+  <dialog id="confirmDialog">
+
+    <div class="dialog-card">
+
+      <h2>
+        تأكيد الطلب
+      </h2>
+
+      <div
+        id="summary"
+        class="summary"
+      ></div>
+
+
+      <div class="dialog-actions">
+
+        <button
+          id="cancelConfirm"
+          class="secondary-btn"
+          type="button"
+        >
+          تعديل
+        </button>
+
+
+        <button
+          id="confirmRequest"
+          class="primary-btn"
+          type="button"
+        >
+          تأكيد الطلب
+        </button>
+
+      </div>
+
+    </div>
+
+  </dialog>
+
+
+  <!-- =========================
+       نجاح الطلب
+  ========================== -->
+
+  <dialog id="successDialog">
+
+    <div class="dialog-card success-dialog">
+
+      <div class="success-check">
+        ✓
+      </div>
+
+      <h2>
+        تم استلام طلبك
+      </h2>
+
+      <p>
+        بدأ النظام البحث عن سائق متاح.
+      </p>
+
+
+      <div class="order-number-box">
+
+        <span>
+          رقم الطلب
+        </span>
+
+        <strong id="orderNumber"></strong>
+
+      </div>
+
+
+      <a
+        id="trackRequestLink"
+        class="primary-btn full-btn"
+        href="track.html"
+      >
+        تتبع الطلب
+      </a>
+
+
+      <button
+        id="newRequest"
+        class="secondary-btn full-btn"
+        type="button"
+      >
+        طلب جديد
+      </button>
+
+    </div>
+
+  </dialog>
+
+
+  <!-- لا نحذف هذه الملفات لأنها تربط المشروع بـ Supabase -->
+
+  <script src="config.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="app.js"></script>
+
+</body>
+</html>
