@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07090d">
+  <title>مشوار | اطلب سيارة بسهولة</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body class="home-page">
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <span class="brand-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11l1.7-4.2A2 2 0 0 1 8.6 5h6.8a2 2 0 0 1 1.9 1.8L19 11m-14 0h14a2 2 0 0 1 2 2v4a1 1 0 0 1-1 1h-1v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H8v1a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-1H4a1 1 0 0 1-1-1v-4a2 2 0 0 1 2-2Zm2-1h10l-1.2-3H8.2L7 10Zm0 5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm10 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/></svg></span>
+      <span><b id="appName">مشوار</b><small>اطلب سيارة بكل سهولة</small></span>
+    </a>
+    <nav class="nav-links">
+      <a class="home-link" href="index.html">⌂ الرئيسية</a>
+      <a class="admin-btn" href="admin.html">♙ لوحة الإدارة</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-media"></div>
+    <div class="hero-shade"></div>
+    <div class="container hero-content">
+      <div class="hero-copy">
+        <h1>اطلب سيارة<br><span>بسهولة</span></h1>
+        <p>خدمة طلب سيارة آمنة وسريعة في أي وقت</p>
+        <div class="hero-badges"><span>⚡ سريع</span><span>🛡 آمن</span><span>◷ متاح 24/7</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="booking-section">
+    <div class="container">
+      <section class="booking-card" id="requestCard">
+        <div class="booking-title"><span class="mini-car">⌁</span><h2>احجز رحلتك الآن</h2></div>
+        <form id="rideForm" novalidate>
+          <div class="top-fields">
+            <div class="field">
+              <label for="customerName">اسم العميل</label>
+              <div class="input-wrap"><input id="customerName" name="customerName" autocomplete="name" placeholder="أدخل اسمك الكامل" required><span>●</span></div>
+            </div>
+            <div class="field">
+              <label for="pickup">موقع الانطلاق</label>
+              <div class="input-wrap"><input id="pickup" name="pickup" placeholder="مثال: الخالدية - أم القيوين" required><span>⌖</span></div>
+            </div>
+            <div class="field">
+              <label for="destination">الوجهة</label>
+              <div class="input-wrap"><input id="destination" name="destination" placeholder="مثال: كورنيش أم القيوين" required><span>⌖</span></div>
+            </div>
+          </div>
+
+          <div class="second-row">
+            <fieldset class="field time-field"><legend>وقت الطلب</legend><div class="segmented"><label><input type="radio" name="timeType" value="now" checked><span>◉ الآن</span></label><label><input type="radio" name="timeType" value="later"><span>◷ لاحقًا</span></label></div></fieldset>
+            <div class="field"><label for="phone">رقم الهاتف</label><div class="input-wrap"><input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" dir="ltr" placeholder="05xxxxxxxx" required><span>☎</span></div></div>
+            <div class="field"><label for="passengers">عدد الركاب</label><div class="input-wrap"><select id="passengers" name="passengers"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select><span>●</span></div></div>
+          </div>
+
+          <div class="field hidden" id="laterWrap"><label for="scheduledAt">حدد الوقت</label><input class="plain-input" id="scheduledAt" name="scheduledAt" type="datetime-local"></div>
+          <div class="field"><label for="notes">ملاحظات اختيارية</label><div class="input-wrap"><textarea id="notes" name="notes" rows="3" placeholder="أي تفاصيل إضافية..."></textarea><span class="note-icon">▰</span></div></div>
+          <div id="formError" class="alert error hidden" role="alert"></div>
+          <button class="primary big" type="submit"><span class="btn-car">▰</span> إرسال طلب سيارة</button>
+        </form>
+      </section>
+    </div>
+  </section>
+
+  <section class="why-section">
+    <div class="container">
+      <h2>لماذا تختار مشوار؟</h2><div class="accent-line"></div>
+      <div class="benefits">
+        <article><div class="benefit-icon">⚡</div><h3>سريع وفعال</h3><p>استجابة سريعة في أي وقت</p></article>
+        <article><div class="benefit-icon">🛡</div><h3>آمن وموثوق</h3><p>رحلات آمنة مع سائقين موثوقين</p></article>
+        <article><div class="benefit-icon">🎧</div><h3>دعم على مدار الساعة</h3><p>فريق الدعم متاح لخدمتك</p></article>
+      </div>
+      <div class="skyline"><img src="uaq-skyline.png" alt="معالم أم القيوين"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div class="container footer-box"><div class="footer-col brand-footer"><div class="footer-brand"><span class="footer-car">▰</span><b>مشوار</b></div><p>خدمة طلب سيارة آمنة وسريعة<br>في أي وقت وأي مكان</p></div><div class="footer-col"><h4>روابط سريعة</h4><a href="index.html">الرئيسية</a><a href="#">عن الخدمة</a><a href="#">الشروط والأحكام</a><a href="#">سياسة الخصوصية</a></div><div class="footer-col"><h4>تواصل معنا</h4><p>✉ info@mashwar.ae</p><p>☎ +971 50 123 4567</p><div class="socials"><span>◉</span><span>◎</span><span>𝕏</span></div></div></div><div class="copyright">© 2026 مشوار - جميع الحقوق محفوظة</div></footer>
+
+<dialog id="confirmDialog"><div class="dialog-card"><h2>تأكيد الطلب</h2><div id="summary" class="summary"></div><div class="dialog-actions"><button id="cancelConfirm" class="secondary" type="button">تعديل</button><button id="confirmRequest" class="primary" type="button">تأكيد الطلب</button></div></div></dialog>
+<dialog id="successDialog"><div class="dialog-card center"><div class="success-icon">✓</div><h2>تم استلام طلبك</h2><p>سيتم التواصل معك لتأكيد السيارة.</p><div class="order-box">رقم الطلب <strong id="orderNumber"></strong></div><button id="newRequest" class="primary big" type="button">طلب جديد</button></div></dialog>
+<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script>
+</body></html>
