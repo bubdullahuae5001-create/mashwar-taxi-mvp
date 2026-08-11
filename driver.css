@@ -1,0 +1,570 @@
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#090c10;
+  color:#fff;
+  font-family:Tahoma,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+.driver-header{
+  background:#050608;
+  border-bottom:1px solid #20242a;
+  position:sticky;
+  top:0;
+  z-index:50;
+}
+
+.driver-header-inner{
+  width:min(980px,calc(100% - 24px));
+  min-height:66px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.driver-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#fff;
+  text-decoration:none;
+}
+
+.driver-brand-icon{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  background:#ffc400;
+  color:#111;
+  border-radius:12px;
+  font-size:22px;
+}
+
+.driver-brand strong{
+  display:block;
+  font-size:22px;
+}
+
+.driver-brand small{
+  display:block;
+  color:#b8bec7;
+  font-size:10px;
+  margin-top:3px;
+}
+
+.driver-header-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.driver-languages{
+  display:flex;
+  gap:4px;
+}
+
+.driver-languages button,
+.back-home,
+.driver-secondary-btn{
+  border:1px solid #343a42;
+  background:#15191e;
+  color:#fff;
+  border-radius:8px;
+  padding:8px 10px;
+  cursor:pointer;
+  text-decoration:none;
+  font-size:12px;
+}
+
+.driver-page{
+  width:min(980px,calc(100% - 24px));
+  margin:24px auto 60px;
+}
+
+.driver-auth-card,
+.driver-dashboard-card,
+.driver-dashboard-head{
+  background:#12161b;
+  border:1px solid #292f37;
+  border-radius:17px;
+  padding:22px;
+  margin-bottom:16px;
+  box-shadow:0 16px 40px rgba(0,0,0,.18);
+}
+
+.driver-auth-intro{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding-bottom:18px;
+  margin-bottom:18px;
+  border-bottom:1px solid #252b33;
+}
+
+.driver-auth-icon{
+  width:56px;
+  height:56px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:#ffc400;
+  color:#111;
+  font-size:28px;
+}
+
+.driver-auth-intro h1{
+  margin:0;
+  font-size:26px;
+}
+
+.driver-auth-intro p{
+  margin:6px 0 0;
+  color:#adb3bc;
+  font-size:13px;
+  line-height:1.7;
+}
+
+.driver-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  padding:5px;
+  background:#080a0d;
+  border-radius:11px;
+  margin-bottom:18px;
+}
+
+.driver-tabs button{
+  border:0;
+  background:transparent;
+  color:#aeb4bd;
+  border-radius:8px;
+  padding:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.driver-tabs button.active{
+  background:#ffc400;
+  color:#111;
+}
+
+.driver-form{
+  display:grid;
+  gap:14px;
+}
+
+.form-heading h2{
+  margin:0;
+}
+
+.form-heading p{
+  color:#adb3bc;
+  margin:5px 0 0;
+  font-size:13px;
+}
+
+.driver-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.driver-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.driver-field label{
+  font-size:13px;
+  font-weight:800;
+}
+
+.driver-field input,
+.driver-field select{
+  width:100%;
+  min-height:46px;
+  border:1px solid #d6dae0;
+  border-radius:9px;
+  background:#fff;
+  color:#111;
+  padding:12px;
+  outline:none;
+}
+
+.driver-field input:focus,
+.driver-field select:focus{
+  border-color:#ffc400;
+  box-shadow:0 0 0 3px rgba(255,196,0,.14);
+}
+
+.driver-plan-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:16px;
+  background:linear-gradient(135deg,#211b00,#151200);
+  border:1px solid #5f4b00;
+  border-radius:13px;
+}
+
+.plan-label{
+  color:#ffc400;
+  font-size:11px;
+  font-weight:900;
+}
+
+.driver-plan-card strong{
+  display:block;
+  margin-top:4px;
+  font-size:20px;
+}
+
+.driver-plan-card p{
+  margin:4px 0 0;
+  color:#d6d0b7;
+  font-size:12px;
+}
+
+.plan-price{
+  text-align:center;
+}
+
+.plan-price strong{
+  font-size:34px;
+  color:#ffc400;
+  line-height:1;
+}
+
+.plan-price span{
+  display:block;
+  margin-top:4px;
+  color:#fff;
+  font-size:11px;
+}
+
+.driver-section-title{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  margin-top:8px;
+  padding-top:16px;
+  border-top:1px solid #252b33;
+}
+
+.driver-section-title>span{
+  width:34px;
+  height:34px;
+  display:grid;
+  place-items:center;
+  background:#ffc400;
+  color:#111;
+  border-radius:10px;
+  font-weight:900;
+}
+
+.driver-section-title h3{
+  margin:0;
+}
+
+.driver-section-title p{
+  margin:4px 0 0;
+  color:#adb3bc;
+  font-size:12px;
+}
+
+.document-list{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.document-list div{
+  background:#0c1014;
+  border:1px solid #2b3139;
+  border-radius:9px;
+  padding:11px;
+  font-size:12px;
+}
+
+.document-list span{
+  color:#ffc400;
+  margin-left:5px;
+}
+
+.driver-terms{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  color:#d1d5da;
+  font-size:12px;
+  line-height:1.7;
+}
+
+.driver-terms input{
+  margin-top:4px;
+}
+
+.driver-primary-btn{
+  border:0;
+  background:#ffc400;
+  color:#111;
+  border-radius:9px;
+  padding:13px 16px;
+  min-height:47px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.driver-error{
+  background:#431a1a;
+  color:#ffb4ae;
+  border-radius:8px;
+  padding:10px;
+  font-size:12px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.driver-dashboard-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.dashboard-label{
+  color:#ffc400;
+  font-size:11px;
+  font-weight:900;
+}
+
+.driver-dashboard-head h1{
+  margin:3px 0;
+  font-size:28px;
+}
+
+.driver-dashboard-head p{
+  margin:0;
+  color:#adb3bc;
+}
+
+.driver-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.driver-stats article{
+  background:#12161b;
+  border:1px solid #292f37;
+  border-radius:14px;
+  padding:16px;
+}
+
+.driver-stats span{
+  display:block;
+  color:#adb3bc;
+  font-size:11px;
+  margin-bottom:7px;
+}
+
+.driver-stats strong{
+  font-size:19px;
+}
+
+.dashboard-card-heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.dashboard-card-heading h2{
+  margin:0;
+}
+
+.dashboard-card-heading p{
+  margin:4px 0 0;
+  color:#adb3bc;
+  font-size:12px;
+}
+
+.availability-grid{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  align-items:end;
+}
+
+.availability-note{
+  margin-top:10px;
+  color:#aeb4bc;
+  font-size:12px;
+  line-height:1.7;
+}
+
+.ride-cards{
+  display:grid;
+  gap:10px;
+}
+
+.empty-state{
+  text-align:center;
+  padding:24px 12px;
+  border:1px dashed #343a42;
+  border-radius:12px;
+  color:#adb3bc;
+}
+
+.empty-state span{
+  display:block;
+  font-size:30px;
+  margin-bottom:8px;
+}
+
+.empty-state strong{
+  display:block;
+  color:#fff;
+  margin-bottom:5px;
+}
+
+.empty-state p{
+  margin:0;
+  font-size:12px;
+}
+
+.ride-card{
+  background:#0b0e12;
+  border:1px solid #2b3139;
+  border-radius:13px;
+  padding:15px;
+}
+
+.ride-card>strong{
+  color:#ffc400;
+  font-size:16px;
+}
+
+.ride-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin:12px 0;
+}
+
+.ride-grid div{
+  background:#151a20;
+  border-radius:8px;
+  padding:9px;
+  font-size:12px;
+  color:#adb3bc;
+}
+
+.ride-grid b{
+  display:block;
+  margin-top:4px;
+  color:#fff;
+  font-size:13px;
+}
+
+.ride-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.ride-actions a,
+.ride-actions button{
+  flex:1;
+  min-width:110px;
+  text-align:center;
+  text-decoration:none;
+}
+
+@media(max-width:700px){
+
+  .driver-page{
+    width:calc(100% - 16px);
+    margin-top:12px;
+  }
+
+  .driver-header-inner{
+    width:calc(100% - 16px);
+  }
+
+  .driver-languages{
+    display:none;
+  }
+
+  .back-home{
+    padding:7px 8px;
+    font-size:11px;
+  }
+
+  .driver-auth-card,
+  .driver-dashboard-card,
+  .driver-dashboard-head{
+    padding:15px;
+    border-radius:14px;
+  }
+
+  .driver-auth-intro{
+    align-items:flex-start;
+  }
+
+  .driver-auth-intro h1{
+    font-size:21px;
+  }
+
+  .driver-grid{
+    grid-template-columns:1fr;
+  }
+
+  .driver-plan-card{
+    align-items:flex-start;
+  }
+
+  .document-list{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .driver-stats{
+    grid-template-columns:1fr;
+  }
+
+  .availability-grid{
+    grid-template-columns:1fr;
+  }
+
+  .driver-dashboard-head{
+    align-items:flex-start;
+  }
+
+  .ride-grid{
+    grid-template-columns:1fr;
+  }
+
+  .dashboard-card-heading{
+    align-items:flex-start;
+  }
+
+}
