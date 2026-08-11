@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07090d">
+  <title>مشوار | تتبع الطلب</title>
+  <link rel="stylesheet" href="driver.css">
+</head>
+
+<body>
+
+<header class="driver-header">
+  <div class="driver-header-inner">
+    <a class="driver-brand" href="index.html">
+      <span class="driver-brand-icon">🚕</span>
+      <span>
+        <strong>مشوار</strong>
+        <small>تتبع الطلب</small>
+      </span>
+    </a>
+
+    <a href="index.html" class="back-home">
+      الرئيسية
+    </a>
+  </div>
+</header>
+
+<main class="driver-page">
+
+  <section class="driver-auth-card">
+
+    <div class="driver-auth-intro">
+
+      <span class="driver-auth-icon">
+        📍
+      </span>
+
+      <div>
+        <h1>
+          تتبع طلب السيارة
+        </h1>
+
+        <p>
+          أدخل رقم الطلب ورقم الهاتف المستخدم في الحجز.
+        </p>
+      </div>
+
+    </div>
+
+    <form id="trackForm" class="driver-form">
+
+      <div class="driver-grid">
+
+        <div class="driver-field">
+
+          <label for="orderNo">
+            رقم الطلب
+          </label>
+
+          <input
+            id="orderNo"
+            type="text"
+            dir="ltr"
+            placeholder="R260811-XXXXX"
+            required
+          >
+
+        </div>
+
+        <div class="driver-field">
+
+          <label for="phone">
+            رقم الهاتف
+          </label>
+
+          <input
+            id="phone"
+            type="tel"
+            inputmode="tel"
+            dir="ltr"
+            placeholder="0501234567"
+            required
+          >
+
+        </div>
+
+      </div>
+
+      <button
+        class="driver-primary-btn"
+        type="submit"
+      >
+        عرض حالة الطلب
+      </button>
+
+    </form>
+
+  </section>
+
+
+  <section
+    id="trackingResult"
+    class="driver-dashboard-card hidden"
+  >
+
+    <div class="dashboard-card-heading">
+
+      <div>
+
+        <span class="dashboard-label">
+          حالة الطلب
+        </span>
+
+        <h2 id="trackingOrderNumber">
+          —
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="tracking-progress">
+
+      <div
+        class="tracking-step"
+        data-status="new"
+      >
+        <span>1</span>
+
+        <div>
+          <strong>تم استلام الطلب</strong>
+          <small>تم تسجيل طلبك بنجاح</small>
+        </div>
+      </div>
+
+
+      <div
+        class="tracking-step"
+        data-status="searching"
+      >
+        <span>2</span>
+
+        <div>
+          <strong>جاري البحث عن سائق</strong>
+          <small>يتم إرسال الطلب للسائقين المتاحين</small>
+        </div>
+      </div>
+
+
+      <div
+        class="tracking-step"
+        data-status="accepted"
+      >
+        <span>3</span>
+
+        <div>
+          <strong>تم قبول الطلب</strong>
+          <small>تم تعيين سائق للرحلة</small>
+        </div>
+      </div>
+
+
+      <div
+        class="tracking-step"
+        data-status="on_the_way"
+      >
+        <span>4</span>
+
+        <div>
+          <strong>السائق في الطريق</strong>
+          <small>السائق متجه إلى موقع الانطلاق</small>
+        </div>
+      </div>
+
+
+      <div
+        class="tracking-step"
+        data-status="arrived"
+      >
+        <span>5</span>
+
+        <div>
+          <strong>وصل السائق</strong>
+          <small>السائق وصل إلى موقعك</small>
+        </div>
+      </div>
+
+
+      <div
+        class="tracking-step"
+        data-status="started"
+      >
+        <span>6</span>
+
+        <div>
+          <strong>بدأت الرحلة</strong>
+          <small>الرحلة جارية الآن</small>
+        </div>
+      </div>
+
+
+      <div
+        class="tracking-step"
+        data-status="completed"
+      >
+        <span>✓</span>
+
+        <div>
+          <strong>اكتملت الرحلة</strong>
+          <small>نتمنى لك رحلة سعيدة</small>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div
+      id="driverInfo"
+      class="driver-info-box hidden"
+    >
+
+      <div class="driver-info-title">
+
+        <span>
+          🚕
+        </span>
+
+        <div>
+          <strong>
+            بيانات السائق
+          </strong>
+
+          <small>
+            تم قبول طلبك
+          </small>
+        </div>
+
+      </div>
+
+
+      <div class="driver-info-grid">
+
+        <div>
+          <span>
+            اسم السائق
+          </span>
+
+          <strong id="trackingDriverName">
+            —
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            السيارة
+          </span>
+
+          <strong id="trackingCarType">
+            —
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            رقم المركبة
+          </span>
+
+          <strong id="trackingCarNumber">
+            —
+          </strong>
+        </div>
+
+
+        <div>
+          <span>
+            الهاتف
+          </span>
+
+          <strong
+            id="trackingDriverPhone"
+            dir="ltr"
+          >
+            —
+          </strong>
+        </div>
+
+      </div>
+
+
+      <div class="ride-actions">
+
+        <a
+          id="callDriver"
+          class="driver-secondary-btn"
+          href="#"
+        >
+          اتصال بالسائق
+        </a>
+
+
+        <a
+          id="whatsappDriver"
+          class="driver-primary-btn"
+          href="#"
+          target="_blank"
+        >
+          واتساب
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="tracking-route">
+
+      <div>
+
+        <span>
+          الانطلاق
+        </span>
+
+        <strong id="trackingPickup">
+          —
+        </strong>
+
+      </div>
+
+
+      <div class="route-arrow">
+        ←
+      </div>
+
+
+      <div>
+
+        <span>
+          الوجهة
+        </span>
+
+        <strong id="trackingDestination">
+          —
+        </strong>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<script src="config.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+const cfg = window.APP_CONFIG || {};
+
+const sb = supabase.createClient(
+  cfg.SUPABASE_URL,
+  cfg.SUPABASE_ANON_KEY
+);
+
+
+const form =
+  document.getElementById(
+    'trackForm'
+  );
+
+
+const result =
+  document.getElementById(
+    'trackingResult'
+  );
+
+
+const query =
+  new URLSearchParams(
+    window.location.search
+  );
+
+
+const queryOrder =
+  query.get('order');
+
+
+const queryPhone =
+  query.get('phone');
+
+
+if(queryOrder){
+
+  document.getElementById(
+    'orderNo'
+  ).value =
+    queryOrder;
+
+}
+
+
+if(queryPhone){
+
+  document.getElementById(
+    'phone'
+  ).value =
+    queryPhone;
+
+}
+
+
+const statusOrder = [
+
+  'new',
+
+  'searching',
+
+  'accepted',
+
+  'on_the_way',
+
+  'arrived',
+
+  'started',
+
+  'completed'
+
+];
+
+
+function normalizePhone(
+  value
+){
+
+  return String(
+    value || ''
+  )
+  .replace(
+    /\D/g,
+    ''
+  );
+
+}
+
+
+function whatsappPhone(
+  phone
+){
+
+  let number =
+    normalizePhone(
+      phone
+    );
+
+
+  if(
+    number.startsWith(
+      '0'
+    )
+  ){
+
+    number =
+      '971' +
+      number.slice(
+        1
+      );
+
+  }
+
+
+  if(
+    !number.startsWith(
+      '971'
+    )
+  ){
+
+    number =
+      '971' +
+      number;
+
+  }
+
+
+  return number;
+
+}
+
+
+function updateProgress(
+  status
+){
+
+  const currentIndex =
+    statusOrder.indexOf(
+      status
+    );
+
+
+  document
+    .querySelectorAll(
+      '.tracking-step'
+    )
+    .forEach(
+      step => {
+
+        const stepStatus =
+          step.dataset.status;
+
+
+        const stepIndex =
+          statusOrder.indexOf(
+            stepStatus
+          );
+
+
+        step.classList.remove(
+          'done',
+          'current'
+        );
+
+
+        if(
+          stepIndex <
+          currentIndex
+        ){
+
+          step.classList.add(
+            'done'
+          );
+
+        }
+
+
+        if(
+          stepIndex ===
+          currentIndex
+        ){
+
+          step.classList.add(
+            'current'
+          );
+
+        }
+
+      }
+    );
+
+}
+
+
+async function trackRide(){
+
+  const orderNumber =
+    document
+      .getElementById(
+        'orderNo'
+      )
+      .value
+      .trim();
+
+
+  const phone =
+    document
+      .getElementById(
+        'phone'
+      )
+      .value
+      .trim();
+
+
+  const {
+    data,
+    error
+  } = await sb.rpc(
+    'track_ride',
+    {
+
+      p_order_number:
+        orderNumber,
+
+      p_phone:
+        phone
+
+    }
+  );
+
+
+  if(error){
+
+    alert(
+      error.message
+    );
+
+    return;
+  }
+
+
+  const ride =
+    data?.[0];
+
+
+  if(!ride){
+
+    alert(
+      'لم يتم العثور على الطلب. تأكد من رقم الطلب ورقم الهاتف.'
+    );
+
+    result.classList.add(
+      'hidden'
+    );
+
+    return;
+  }
+
+
+  result.classList.remove(
+    'hidden'
+  );
+
+
+  document.getElementById(
+    'trackingOrderNumber'
+  ).textContent =
+    ride.order_number;
+
+
+  document.getElementById(
+    'trackingPickup'
+  ).textContent =
+    ride.pickup;
+
+
+  document.getElementById(
+    'trackingDestination'
+  ).textContent =
+    ride.destination;
+
+
+  updateProgress(
+    ride.status
+  );
+
+
+  const driverBox =
+    document.getElementById(
+      'driverInfo'
+    );
+
+
+  if(
+    ride.driver_name
+  ){
+
+    driverBox.classList.remove(
+      'hidden'
+    );
+
+
+    document.getElementById(
+      'trackingDriverName'
+    ).textContent =
+      ride.driver_name;
+
+
+    document.getElementById(
+      'trackingCarType'
+    ).textContent =
+      ride.car_type ||
+      'سيارة أجرة';
+
+
+    document.getElementById(
+      'trackingCarNumber'
+    ).textContent =
+      ride.car_number ||
+      '—';
+
+
+    document.getElementById(
+      'trackingDriverPhone'
+    ).textContent =
+      ride.driver_phone ||
+      '—';
+
+
+    document.getElementById(
+      'callDriver'
+    ).href =
+      'tel:' +
+      ride.driver_phone;
+
+
+    document.getElementById(
+      'whatsappDriver'
+    ).href =
+      'https://wa.me/' +
+      whatsappPhone(
+        ride.driver_phone
+      );
+
+
+  }else{
+
+    driverBox.classList.add(
+      'hidden'
+    );
+
+  }
+
+}
+
+
+form.addEventListener(
+  'submit',
+  async event => {
+
+    event.preventDefault();
+
+    await trackRide();
+
+  }
+);
+
+
+if(
+  queryOrder &&
+  queryPhone
+){
+
+  trackRide();
+
+}
+
+
+/* تحديث تلقائي كل 10 ثوانٍ */
+
+setInterval(
+  () => {
+
+    if(
+      !result.classList.contains(
+        'hidden'
+      )
+    ){
+
+      trackRide();
+
+    }
+
+  },
+  10000
+);
+
+</script>
+
+</body>
+</html>
