@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090c10">
+  <title>مشوار | خدمة سيارات الأجرة - أم القيوين</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <span class="brand-mark"><b>M</b><i></i></span>
+      <span><strong>مشوار</strong><small>Umm Al Quwain Taxi</small></span>
+    </a>
+    <nav class="top-nav">
+      <a href="track.html">تتبع الطلب</a>
+      <select id="languageSelect" aria-label="اللغة">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+        <option value="ur">اردو</option>
+      </select>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-bg"></div><div class="hero-shade"></div>
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <span class="location-chip">أم القيوين</span>
+        <h1 id="heroTitle">مشوارك يبدأ من هنا</h1>
+        <p id="heroSub">اطلب سيارة أجرة في أم القيوين بخطوات بسيطة وسريعة.</p>
+        <div class="hero-actions">
+          <button id="openBooking" class="cta primary" type="button">طلب سيارة</button>
+          <a id="driverCta" class="cta secondary" href="driver.html?register=1">تسجيل سائق</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="benefits-section">
+    <div class="container">
+      <h2 id="whyTitle">لماذا مشوار؟</h2>
+      <div class="benefits">
+        <article><span>⚡</span><h3 id="b1t">توزيع تلقائي</h3><p id="b1p">يرسل الطلب مباشرة إلى السائقين المتاحين.</p></article>
+        <article><span>🛡️</span><h3 id="b2t">سائقون معتمدون</h3><p id="b2p">اعتماد السائق والمركبة يتم حسب إعدادات النظام.</p></article>
+        <article><span>📱</span><h3 id="b3t">بدون تطبيق</h3><p id="b3p">اطلب وتابع رحلتك من المتصفح مباشرة.</p></article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dialog id="bookingDialog">
+  <form id="rideForm" class="booking-card" novalidate>
+    <div class="dialog-head"><div><h2 id="bookingTitle">طلب سيارة</h2><p id="bookingSub">أدخل بيانات الرحلة ثم أكد الطلب.</p></div><button id="closeBooking" type="button">×</button></div>
+    <div class="grid">
+      <label><span id="lblName">الاسم</span><input name="customerName" required></label>
+      <label><span id="lblPhone">رقم الهاتف</span><input name="phone" type="tel" dir="ltr" required></label>
+      <label><span id="lblPickup">موقع الانطلاق</span><input name="pickup" required></label>
+      <label><span id="lblDestination">الوجهة</span><input name="destination" required></label>
+      <label class="wide"><span id="lblZone">منطقة الانطلاق</span><select name="pickupZone" required><option value="">اختر المنطقة</option><option>أم القيوين - المدينة</option><option>السلمة</option><option>الراس</option><option>الدر البيضاء</option><option>فلج المعلا</option><option>كورنيش أم القيوين</option><option>المنطقة الصناعية</option><option>أخرى</option></select></label>
+      <label><span id="lblPassengers">عدد الركاب</span><select name="passengers"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+      <label><span id="lblTime">وقت الطلب</span><select name="timeType"><option value="now">الآن</option><option value="later">لاحقًا</option></select></label>
+      <label id="laterWrap" class="wide hidden"><span>موعد الرحلة</span><input name="scheduledAt" type="datetime-local"></label>
+      <label class="wide"><span id="lblNotes">ملاحظات اختيارية</span><textarea name="notes" rows="3"></textarea></label>
+    </div>
+    <div id="formError" class="error hidden"></div>
+    <button id="continueRequest" class="cta primary full" type="submit">متابعة الطلب</button>
+  </form>
+</dialog>
+
+<dialog id="confirmDialog"><div class="booking-card"><h2>تأكيد الطلب</h2><div id="summary"></div><div class="actions"><button id="editRequest" class="cta secondary">تعديل</button><button id="confirmRequest" class="cta primary">تأكيد الطلب</button></div></div></dialog>
+
+<dialog id="successDialog"><div class="success-card"><div class="check">✓</div><h2 id="successTitle">تم استلام طلبك</h2><strong id="thanksText">شكرًا لاختيارك مشوار</strong><p id="successText">بدأ النظام البحث عن سائق مناسب.</p><div class="order-box"><small>رقم الطلب</small><b id="orderNumber"></b></div><a id="trackRequestLink" class="cta primary full" href="track.html">تتبع الطلب</a><button id="closeSuccess" class="cta secondary full">إغلاق</button></div></dialog>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8"></script>
+<script src="app.js"></script>
+</body></html>
