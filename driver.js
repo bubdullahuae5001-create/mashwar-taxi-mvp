@@ -41,15 +41,31 @@ async function routeUser(){
 function renderDriver(){
  $('driverHello').textContent=`مرحبًا ${driver.name||''}`;$('approvalStat').textContent=approval(driver.approval_status);
  $('subscriptionStat').textContent=driver.subscription_status==='trial'&&driver.trial_ends_at?`تجربة حتى ${new Date(driver.trial_ends_at).toLocaleDateString('ar-AE')}`:(driver.subscription_status||'—');
- $('availabilityStat').textContent=driver.is_busy?'في رحلة':driver.is_available?'متاح':'غير متاح';$('availabilityBtn').textContent=driver.is_available?'إيقاف استقبال الطلبات':'استقبل الطلبات';if(driver.current_zone)$('zoneSelect').value=driver.current_zone
+ $('availabilityStat').textContent=driver.is_busy?'في رحلة':driver.is_available?'متاح':'غير متاح';$('availabilityBtn').textContent=driver.is_available?'إيقاف استقبال الطلبات':'أصبح متاحًا';if(driver.current_zone)$('zoneSelect').value=driver.current_zone
 }
 async function refreshDriver(){const {data:u}=await sb.auth.getUser();if(!u.user)return;const {data:d}=await sb.from('drivers').select('*').eq('user_id',u.user.id).maybeSingle();if(!d)return;driver=d;const {data:v}=await sb.from('vehicles').select('*').eq('driver_id',d.id).order('created_at',{ascending:false}).limit(1);vehicle=v?.[0]||null;if(d.approval_status!=='approved'||vehicle?.approval_status!=='approved'){await routeUser();return}renderDriver();await Promise.all([loadOffers(),loadActiveRide()])}
 $('availabilityBtn').onclick=async()=>{const {error}=await sb.rpc('set_driver_availability',{p_available:!driver.is_available,p_zone:$('zoneSelect').value});if(error)return alert(error.message);await refreshDriver()};
 $('refreshBtn').onclick=async()=>{await sb.rpc('refresh_dispatches');await refreshDriver()};
 
+/* ===== تنبيه صوتي عند وصول طلب جديد ===== */
+let lastOfferCount=0;
+function playNewOfferSound(){
+ try{
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.type='sine';o.frequency.value=880;
+  g.gain.setValueAtTime(0.25,ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
+  o.start();o.stop(ctx.currentTime+0.6);
+ }catch(e){console.error('sound error',e)}
+}
+
 async function loadOffers(){
  const {data,error}=await sb.from('ride_offers').select('id,ride_id,offer_status,expires_at,ride_requests(*)').eq('driver_id',driver.id).eq('offer_status','offered').gt('expires_at',new Date().toISOString()).order('offered_at',{ascending:false});
  if(error){console.error(error);return}
+ if((data||[]).length>lastOfferCount)playNewOfferSound();
+ lastOfferCount=(data||[]).length;
  $('offers').innerHTML=(data||[]).length?(data||[]).map(o=>{const r=o.ride_requests;return `<article class="ride-card"><strong>طلب ${esc(r.order_number)}</strong><div class="ride-grid"><div>الانطلاق<b>${esc(r.pickup)}</b></div><div>الوجهة<b>${esc(r.destination)}</b></div><div>المنطقة<b>${esc(r.pickup_zone||'—')}</b></div><div>الركاب<b>${esc(r.passengers)}</b></div></div><div class="ride-actions"><button class="primary" onclick="acceptRide('${r.id}')">قبول الطلب</button></div></article>`}).join(''):'<div class="empty-state"><strong>لا توجد طلبات جديدة</strong></div>'
 }
 window.acceptRide=async id=>{const {error}=await sb.rpc('accept_ride',{p_ride_id:id});if(error){alert(error.message);return}await refreshDriver()};
