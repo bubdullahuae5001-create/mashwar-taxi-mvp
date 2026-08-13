@@ -45,8 +45,14 @@ button,input,select{font:inherit}
 
 /* ===== kpis ===== */
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
-.kpis article{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px}
-.kpis span{display:block;color:var(--muted);font-size:11px;font-weight:700}
+.kpis article{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px;position:relative;overflow:hidden}
+.kpis article::before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:0;width:3px;background:var(--yellow);opacity:0}
+.kpis article:hover::before{opacity:1}
+.kpi-icon{display:inline-flex;width:30px;height:30px;border-radius:9px;align-items:center;justify-content:center;font-size:14px;background:var(--soft);margin-bottom:8px}
+.icon-waiting{background:var(--amber-bg)}
+.icon-approved,.icon-online{background:var(--green-bg)}
+.icon-pending{background:var(--amber-bg)}
+.kpis span:not(.kpi-icon){display:block;color:var(--muted);font-size:11px;font-weight:700}
 .kpis strong{display:block;font-size:26px;margin:6px 0 2px}
 .kpis small{display:block;color:#98a2b3;font-size:10px}
 
@@ -64,19 +70,25 @@ button,input,select{font:inherit}
 .toolbar{display:grid;grid-template-columns:1fr 190px;gap:9px;margin-bottom:12px}
 .toolbar input,.toolbar select{border:1px solid #d0d5dd;border-radius:9px;padding:10px 12px;background:#fff}
 
-.table-wrap{overflow:auto}
+.table-wrap{overflow:auto;position:relative;box-shadow:inset -14px 0 12px -14px rgba(0,0,0,.08)}
 table{width:100%;border-collapse:collapse;min-width:840px}
 th,td{text-align:right;padding:13px 12px;border-bottom:1px solid #eef1f3;font-size:12.5px;vertical-align:middle}
 th{background:var(--soft);color:var(--muted);font-size:11px;font-weight:800;position:sticky;top:0}
+th:first-child,td:first-child{position:sticky;right:0;background:#fff;box-shadow:2px 0 4px -2px rgba(0,0,0,.06)}
+th:first-child{background:var(--soft)}
 tr:last-child td{border-bottom:0}
 tbody tr:hover{background:#fafbfc}
+tbody tr:hover td:first-child{background:#fafbfc}
 .person strong{display:block}
 .person small{display:block;color:var(--muted);margin-top:3px}
 
-.status{display:inline-flex;border-radius:999px;padding:5px 10px;font-size:10.5px;font-weight:800;white-space:nowrap}
+.status{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;font-size:10.5px;font-weight:800;white-space:nowrap}
 .status.ok{background:var(--green-bg);color:var(--green)}
 .status.warn{background:var(--amber-bg);color:var(--amber)}
 .status.bad{background:var(--red-bg);color:var(--red)}
+/* تمييز حالة السائق عن حالة المركبة عند تجاورهما في نفس الخلية */
+td .status{margin-inline-end:5px}
+td .status ~ .status::before{content:'🚗 ';font-size:9px}
 
 .row-actions{display:flex;flex-wrap:wrap;gap:6px}
 .row-actions button{border:1px solid #d0d5dd;background:#fff;border-radius:7px;padding:7px 10px;font-size:11px;cursor:pointer;font-weight:700}
@@ -86,8 +98,9 @@ tbody tr:hover{background:#fafbfc}
 .row-actions .reject{color:var(--red);border-color:#f4b4ae}
 
 .tabs{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
-.subtab{border:1px solid #d0d5dd;background:#fff;border-radius:9px;padding:9px 14px;font-weight:800;font-size:12.5px;cursor:pointer}
-.subtab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.subtab{border:1px solid #d0d5dd;background:#fff;border-radius:9px;padding:9px 14px;font-weight:800;font-size:12.5px;cursor:pointer;transition:.15s}
+.subtab:hover{border-color:#98a2b3}
+.subtab.active{background:var(--yellow);color:#111;border-color:var(--yellow);box-shadow:0 4px 12px rgba(255,196,0,.28)}
 
 .days-low{color:var(--red);font-weight:800}
 
@@ -121,4 +134,7 @@ dialog::backdrop{background:rgba(10,13,17,.6)}
   .kpis{grid-template-columns:1fr 1fr}
   .toolbar{grid-template-columns:1fr}
   .detail-grid{grid-template-columns:1fr}
+  table{min-width:680px}
+  th,td{padding:11px 9px;font-size:12px}
+  .row-actions button{padding:6px 8px;font-size:10px}
 }
