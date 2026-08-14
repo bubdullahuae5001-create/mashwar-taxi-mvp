@@ -72,9 +72,12 @@ function playNewOfferSound(){
 async function loadOffers(){
  const {data,error}=await sb.from('ride_offers').select('id,ride_id,offer_status,expires_at,ride_requests(*)').eq('driver_id',driver.id).eq('offer_status','offered').gt('expires_at',new Date().toISOString()).order('offered_at',{ascending:false});
  if(error){console.error(error);return}
- if((data||[]).length>lastOfferCount)playNewOfferSound();
- lastOfferCount=(data||[]).length;
- $('offers').innerHTML=(data||[]).length?(data||[]).map(o=>{const r=o.ride_requests;return `<article class="ride-card"><strong>طلب ${esc(r.order_number)}</strong><div class="ride-grid"><div>الانطلاق<b>${esc(r.pickup)}</b></div><div>الوجهة<b>${esc(r.destination)}</b></div><div>المنطقة<b>${esc(r.pickup_zone||'—')}</b></div><div>الركاب<b>${esc(r.passengers)}</b></div></div><div class="ride-actions"><button class="primary" onclick="acceptRide('${r.id}')">قبول الطلب</button></div></article>`}).join(''):'<div class="empty-state"><strong>لا توجد طلبات جديدة</strong></div>'
+ const valid=(data||[]).filter(o=>o.ride_requests);
+ const dropped=(data||[]).length-valid.length;
+ if(dropped>0)console.warn('تم تجاهل',dropped,'عرض/عروض بدون بيانات طلب مرتبطة — راجع صلاحيات RLS على ride_requests');
+ if(valid.length>lastOfferCount)playNewOfferSound();
+ lastOfferCount=valid.length;
+ $('offers').innerHTML=valid.length?valid.map(o=>{const r=o.ride_requests;return `<article class="ride-card"><strong>طلب ${esc(r.order_number)}</strong><div class="ride-grid"><div>الانطلاق<b>${esc(r.pickup)}</b></div><div>الوجهة<b>${esc(r.destination)}</b></div><div>المنطقة<b>${esc(r.pickup_zone||'—')}</b></div><div>الركاب<b>${esc(r.passengers)}</b></div></div><div class="ride-actions"><button class="primary" onclick="acceptRide('${r.id}')">قبول الطلب</button></div></article>`}).join(''):'<div class="empty-state"><strong>لا توجد طلبات جديدة</strong></div>'
 }
 window.acceptRide=async id=>{const {error}=await sb.rpc('accept_ride',{p_ride_id:id});if(error){alert(error.message);return}await refreshDriver()};
 async function loadActiveRide(){const {data,error}=await sb.from('ride_requests').select('*').eq('driver_id',driver.id).in('status',['accepted','on_the_way','arrived','started']).order('accepted_at',{ascending:false}).limit(1);if(error)return console.error(error);activeRide=data?.[0]||null;renderRide()}
