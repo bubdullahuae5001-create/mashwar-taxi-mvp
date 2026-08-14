@@ -13,11 +13,15 @@ if(new URLSearchParams(location.search).get('register'))setTimeout(()=>$('regist
 
 $('registerForm').onsubmit=async e=>{
  e.preventDefault();clear('registerError');const fd=new FormData(e.currentTarget);
+ const submitBtn=e.currentTarget.querySelector('button[type="submit"]');
+ const oldBtnText=submitBtn?submitBtn.textContent:'';
+ if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='جارٍ إنشاء الحساب...'}
  const metadata={account_type:'driver',full_name:String(fd.get('full_name')).trim(),phone:String(fd.get('phone')).trim(),driving_license_no:String(fd.get('driving_license_no')).trim(),driving_license_expiry:fd.get('driving_license_expiry')||null,taxi_permit_no:String(fd.get('taxi_permit_no')||'').trim(),current_zone:fd.get('current_zone'),plate_number:String(fd.get('plate_number')).trim(),plate_emirate:fd.get('plate_emirate'),vehicle_make:String(fd.get('vehicle_make')).trim(),vehicle_model:String(fd.get('vehicle_model')).trim(),model_year:Number(fd.get('model_year')),vehicle_color:String(fd.get('vehicle_color')).trim(),registration_expiry:fd.get('registration_expiry')||null,insurance_expiry:fd.get('insurance_expiry')||null};
  const {data,error}=await sb.auth.signUp({email:String(fd.get('email')).trim(),password:fd.get('password'),options:{data:metadata}});
- if(error){err('registerError',error.message.toLowerCase().includes('already registered')?'هذا البريد الإلكتروني مسجل مسبقًا. استخدم دخول السائق.':error.message);return}
+ if(error){err('registerError',error.message.toLowerCase().includes('already registered')?'هذا البريد الإلكتروني مسجل مسبقًا. استخدم دخول السائق.':error.message);if(submitBtn){submitBtn.disabled=false;submitBtn.textContent=oldBtnText}return}
  try{await sb.auth.signOut();}catch(e){console.error('sign-out after register failed:',e)}
  e.currentTarget.reset();$('driverReference').textContent=reference(data.user?.id);showOnly('registrationSuccess');
+ if(submitBtn){submitBtn.disabled=false;submitBtn.textContent=oldBtnText}
 };
 
 $('goLogin').onclick=async()=>{await sb.auth.signOut();showOnly('authView');$('loginTab').click()};
