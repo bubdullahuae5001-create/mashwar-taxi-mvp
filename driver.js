@@ -12,8 +12,8 @@ $('registerTab').onclick=()=>{$('registerForm').classList.remove('hidden');$('lo
 if(new URLSearchParams(location.search).get('register'))setTimeout(()=>$('registerTab').click(),0);
 
 $('registerForm').onsubmit=async e=>{
- e.preventDefault();clear('registerError');const fd=new FormData(e.currentTarget);
- const submitBtn=e.currentTarget.querySelector('button[type="submit"]');
+ e.preventDefault();clear('registerError');const formEl=e.currentTarget;const fd=new FormData(formEl);
+ const submitBtn=formEl.querySelector('button[type="submit"]');
  const oldBtnText=submitBtn?submitBtn.textContent:'';
  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='جارٍ إنشاء الحساب...'}
  try{
@@ -21,7 +21,7 @@ $('registerForm').onsubmit=async e=>{
   const {data,error}=await sb.auth.signUp({email:String(fd.get('email')).trim(),password:fd.get('password'),options:{data:metadata}});
   if(error){err('registerError',error.message.toLowerCase().includes('already registered')?'هذا البريد الإلكتروني مسجل مسبقًا. استخدم دخول السائق.':error.message);return}
   try{await sb.auth.signOut();}catch(e2){console.error('sign-out after register failed:',e2)}
-  e.currentTarget.reset();$('driverReference').textContent=reference(data.user?.id);showOnly('registrationSuccess');
+  formEl.reset();$('driverReference').textContent=reference(data.user?.id);showOnly('registrationSuccess');
  }catch(fatalError){
   err('registerError','حدث خطأ غير متوقع: '+(fatalError.message||'تعذر إتمام التسجيل. حاول مرة أخرى.'));
  }finally{
