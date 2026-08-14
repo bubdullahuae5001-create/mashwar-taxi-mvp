@@ -33,6 +33,7 @@
       <button class="nav-item" data-view="rides">الطلبات</button>
       <button class="nav-item" data-view="drivers">السائقون</button>
       <button class="nav-item" data-view="subscriptions">الاشتراكات</button>
+      <button class="nav-item" data-view="settings">الإعدادات</button>
     </nav>
   </aside>
 
@@ -93,11 +94,9 @@
         <button class="subtab" data-driver-filter="rejected">المرفوضون</button>
       </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>السائق</th><th>رقم اللوحة</th><th>الهاتف</th><th>المركبة</th><th>الحالة</th><th></th></tr></thead>
-          <tbody id="driversRows"></tbody>
-        </table>
+      <div class="rides-layout">
+        <div id="driversList" class="rides-list"></div>
+        <div id="driversDetail" class="rides-detail"></div>
       </div>
     </section>
 
@@ -113,17 +112,25 @@
       </div>
     </section>
 
+    <!-- الإعدادات -->
+    <section id="settingsView" class="view-section hidden">
+      <div class="page-head"><div><h1>الإعدادات</h1><p>حذف نهائي للطلبات القديمة الملغاة أو المكتملة. هذا الإجراء لا يمكن التراجع عنه.</p></div></div>
+
+      <div class="panel" style="margin-bottom:16px">
+        <div class="panel-head"><h2>تنظيف جماعي</h2><p>يحذف كل الطلبات الملغاة والمكتملة الأقدم من 7 أيام دفعة واحدة.</p></div>
+        <button class="btn danger" style="margin-top:14px" onclick="bulkDeleteOldRides()">حذف الطلبات القديمة الملغاة/المكتملة</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>رقم الطلب</th><th>الحالة</th><th>التاريخ</th><th></th></tr></thead>
+          <tbody id="settingsRows"></tbody>
+        </table>
+      </div>
+    </section>
+
   </main>
 </div>
-
-<!-- ===== نافذة التفاصيل ===== -->
-<dialog id="detailDialog">
-  <div class="modal">
-    <div class="modal-head"><h2 id="detailTitle">التفاصيل</h2><button type="button" onclick="detailDialog.close()">×</button></div>
-    <div id="detailBody"></div>
-    <div id="detailActions" class="modal-actions"></div>
-  </div>
-</dialog>
 
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8"></script>
