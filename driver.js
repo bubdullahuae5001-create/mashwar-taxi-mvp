@@ -36,7 +36,7 @@ async function routeUser(){
  if(['suspended','rejected'].includes(d.approval_status)||['suspended','rejected'].includes(vehicle.approval_status)){showOnly('suspendedView');return}
  if(d.approval_status!=='approved'||vehicle.approval_status!=='approved'){showOnly('pendingView');return}
  showOnly('driverView');renderDriver();await Promise.all([loadOffers(),loadActiveRide()]);
- if(polling)clearInterval(polling);polling=setInterval(async()=>{try{await sb.rpc('refresh_dispatches');await refreshDriver()}catch(e){console.error(e)}},10000);
+ if(polling)clearInterval(polling);polling=setInterval(async()=>{try{const {error}=await sb.rpc('refresh_dispatches');if(error)console.error('refresh_dispatches error:',error.message);await refreshDriver()}catch(e){console.error(e)}},10000);
 }
 function renderDriver(){
  $('driverHello').textContent=`مرحبًا ${driver.name||''}`;$('approvalStat').textContent=approval(driver.approval_status);
@@ -45,7 +45,15 @@ function renderDriver(){
 }
 async function refreshDriver(){const {data:u}=await sb.auth.getUser();if(!u.user)return;const {data:d}=await sb.from('drivers').select('*').eq('user_id',u.user.id).maybeSingle();if(!d)return;driver=d;const {data:v}=await sb.from('vehicles').select('*').eq('driver_id',d.id).order('created_at',{ascending:false}).limit(1);vehicle=v?.[0]||null;if(d.approval_status!=='approved'||vehicle?.approval_status!=='approved'){await routeUser();return}renderDriver();await Promise.all([loadOffers(),loadActiveRide()])}
 $('availabilityBtn').onclick=async()=>{const {error}=await sb.rpc('set_driver_availability',{p_available:!driver.is_available,p_zone:$('zoneSelect').value});if(error)return alert(error.message);await refreshDriver()};
-$('refreshBtn').onclick=async()=>{await sb.rpc('refresh_dispatches');await refreshDriver()};
+$('refreshBtn').onclick=async()=>{
+ const btn=$('refreshBtn');const oldText=btn.textContent;btn.disabled=true;btn.textContent='جارٍ التحديث...';
+ try{
+  const {error}=await sb.rpc('refresh_dispatches');
+  if(error){alert('تعذر التحديث: '+error.message);return}
+  await refreshDriver();
+ }catch(e){alert('تعذر التحديث: '+(e.message||'خطأ غير متوقع'))}
+ finally{btn.disabled=false;btn.textContent=oldText}
+};
 
 /* ===== تنبيه صوتي عند وصول طلب جديد ===== */
 let lastOfferCount=0;
