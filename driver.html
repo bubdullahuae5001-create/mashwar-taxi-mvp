@@ -1,98 +1,1163 @@
-const cfg=window.APP_CONFIG||{},sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY),$=id=>document.getElementById(id);
-let driver=null,vehicle=null,activeRide=null,polling=null;
-function showOnly(id){['authView','registrationSuccess','pendingView','suspendedView','driverView'].forEach(x=>$(x)?.classList.add('hidden'));$(id)?.classList.remove('hidden')}
-function err(id,m){$(id).textContent=m;$(id).classList.remove('hidden')}function clear(id){$(id).classList.add('hidden')}
-function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function wa(p){p=String(p||'').replace(/\D/g,'');if(p.startsWith('0'))p='971'+p.slice(1);return p}
-function reference(id){return 'D-'+String(id||'').replace(/-/g,'').slice(0,8).toUpperCase()}
-function approval(s){return({pending:'قيد المراجعة',approved:'معتمد',rejected:'مرفوض',suspended:'موقوف'})[s]||s||'—'}
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07090d">
+  <title>مشوار | بوابة السائق</title>
+  <link rel="stylesheet" href="driver.css">
+</head>
 
-$('loginTab').onclick=()=>{$('loginForm').classList.remove('hidden');$('registerForm').classList.add('hidden');$('loginTab').classList.add('active');$('registerTab').classList.remove('active')};
-$('registerTab').onclick=()=>{$('registerForm').classList.remove('hidden');$('loginForm').classList.add('hidden');$('registerTab').classList.add('active');$('loginTab').classList.remove('active')};
-if(new URLSearchParams(location.search).get('register'))setTimeout(()=>$('registerTab').click(),0);
+<body>
 
-$('registerForm').onsubmit=async e=>{
- e.preventDefault();clear('registerError');const formEl=e.currentTarget;const fd=new FormData(formEl);
- const submitBtn=formEl.querySelector('button[type="submit"]');
- const oldBtnText=submitBtn?submitBtn.textContent:'';
- if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='جارٍ إنشاء الحساب...'}
- try{
-  const metadata={account_type:'driver',full_name:String(fd.get('full_name')).trim(),phone:String(fd.get('phone')).trim(),driving_license_no:String(fd.get('driving_license_no')).trim(),driving_license_expiry:fd.get('driving_license_expiry')||null,taxi_permit_no:String(fd.get('taxi_permit_no')||'').trim(),current_zone:fd.get('current_zone'),plate_number:String(fd.get('plate_number')).trim(),plate_emirate:fd.get('plate_emirate'),vehicle_make:String(fd.get('vehicle_make')).trim(),vehicle_model:String(fd.get('vehicle_model')).trim(),model_year:Number(fd.get('model_year')),vehicle_color:String(fd.get('vehicle_color')).trim(),registration_expiry:fd.get('registration_expiry')||null,insurance_expiry:fd.get('insurance_expiry')||null};
-  const {data,error}=await sb.auth.signUp({email:String(fd.get('email')).trim(),password:fd.get('password'),options:{data:metadata}});
-  if(error){err('registerError',error.message.toLowerCase().includes('already registered')?'هذا البريد الإلكتروني مسجل مسبقًا. استخدم دخول السائق.':error.message);return}
-  try{await sb.auth.signOut();}catch(e2){console.error('sign-out after register failed:',e2)}
-  formEl.reset();$('driverReference').textContent=reference(data.user?.id);showOnly('registrationSuccess');
- }catch(fatalError){
-  err('registerError','حدث خطأ غير متوقع: '+(fatalError.message||'تعذر إتمام التسجيل. حاول مرة أخرى.'));
- }finally{
-  if(submitBtn){submitBtn.disabled=false;submitBtn.textContent=oldBtnText}
- }
-};
+<header class="driver-header">
 
-$('goLogin').onclick=async()=>{await sb.auth.signOut();showOnly('authView');$('loginTab').click()};
-$('loginForm').onsubmit=async e=>{e.preventDefault();clear('loginError');const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){err('loginError','بيانات الدخول غير صحيحة.');return}await routeUser()};
-async function logout(){if(polling)clearInterval(polling);await sb.auth.signOut();location.reload()}
-$('logoutBtn').onclick=logout;$('pendingLogout').onclick=logout;$('suspendedLogout').onclick=logout;
+  <div class="driver-header-inner">
 
-async function routeUser(){
- const {data:u}=await sb.auth.getUser();if(!u.user){showOnly('authView');return}
- const {data:d,error}=await sb.from('drivers').select('*').eq('user_id',u.user.id).maybeSingle();
- if(error||!d){await sb.auth.signOut();showOnly('authView');err('loginError','لم يكتمل إنشاء ملف السائق. تواصل مع الإدارة.');return}
- driver=d;
- const {data:v}=await sb.from('vehicles').select('*').eq('driver_id',d.id).order('created_at',{ascending:false}).limit(1);vehicle=v?.[0]||null;
- if(!vehicle||d.approval_status==='pending'||vehicle.approval_status==='pending'){
-  $('pendingName').textContent=d.name||'—';$('pendingCar').textContent=vehicle?`${vehicle.make||''} ${vehicle.model||''}`.trim():(d.car_type||'—');$('pendingZone').textContent=d.current_zone||'—';showOnly('pendingView');return
- }
- if(['suspended','rejected'].includes(d.approval_status)||['suspended','rejected'].includes(vehicle.approval_status)){showOnly('suspendedView');return}
- if(d.approval_status!=='approved'||vehicle.approval_status!=='approved'){showOnly('pendingView');return}
- showOnly('driverView');renderDriver();await Promise.all([loadOffers(),loadActiveRide()]);
- if(polling)clearInterval(polling);polling=setInterval(async()=>{try{const {error}=await sb.rpc('refresh_dispatches');if(error)console.error('refresh_dispatches error:',error.message);await refreshDriver()}catch(e){console.error(e)}},10000);
-}
-function renderDriver(){
- $('driverHello').textContent=`مرحبًا ${driver.name||''}`;$('approvalStat').textContent=approval(driver.approval_status);
- $('subscriptionStat').textContent=driver.subscription_status==='trial'&&driver.trial_ends_at?`تجربة حتى ${new Date(driver.trial_ends_at).toLocaleDateString('ar-AE')}`:(driver.subscription_status||'—');
- $('availabilityStat').textContent=driver.is_busy?'في رحلة':driver.is_available?'متاح':'غير متاح';$('availabilityBtn').textContent=driver.is_available?'إيقاف استقبال الطلبات':'استقبل الطلبات';if(driver.current_zone)$('zoneSelect').value=driver.current_zone
-}
-async function refreshDriver(){const {data:u}=await sb.auth.getUser();if(!u.user)return;const {data:d}=await sb.from('drivers').select('*').eq('user_id',u.user.id).maybeSingle();if(!d)return;driver=d;const {data:v}=await sb.from('vehicles').select('*').eq('driver_id',d.id).order('created_at',{ascending:false}).limit(1);vehicle=v?.[0]||null;if(d.approval_status!=='approved'||vehicle?.approval_status!=='approved'){await routeUser();return}renderDriver();await Promise.all([loadOffers(),loadActiveRide()])}
-$('availabilityBtn').onclick=async()=>{const {error}=await sb.rpc('set_driver_availability',{p_available:!driver.is_available,p_zone:$('zoneSelect').value});if(error)return alert(error.message);await refreshDriver()};
-$('refreshBtn').onclick=async()=>{
- const btn=$('refreshBtn');const oldText=btn.textContent;btn.disabled=true;btn.textContent='جارٍ التحديث...';
- try{
-  const {error}=await sb.rpc('refresh_dispatches');
-  if(error){alert('تعذر التحديث: '+error.message);return}
-  await refreshDriver();
- }catch(e){alert('تعذر التحديث: '+(e.message||'خطأ غير متوقع'))}
- finally{btn.disabled=false;btn.textContent=oldText}
-};
+    <a class="driver-brand" href="index.html">
+      <span class="driver-brand-icon">🚕</span>
 
-/* ===== تنبيه صوتي عند وصول طلب جديد ===== */
-let lastOfferCount=0;
-function playNewOfferSound(){
- try{
-  const ctx=new (window.AudioContext||window.webkitAudioContext)();
-  const o=ctx.createOscillator(),g=ctx.createGain();
-  o.connect(g);g.connect(ctx.destination);
-  o.type='sine';o.frequency.value=880;
-  g.gain.setValueAtTime(0.25,ctx.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
-  o.start();o.stop(ctx.currentTime+0.6);
- }catch(e){console.error('sound error',e)}
-}
+      <span>
+        <strong>مشوار</strong>
+        <small>بوابة السائق</small>
+      </span>
+    </a>
 
-async function loadOffers(){
- const {data,error}=await sb.rpc('get_driver_offers');
- if(error){console.error(error);return}
- const list=data||[];
- if(list.length>lastOfferCount)playNewOfferSound();
- lastOfferCount=list.length;
- $('offers').innerHTML=list.length?list.map(o=>`<article class="ride-card"><strong>طلب ${esc(o.order_number)}</strong><div class="ride-grid"><div>الانطلاق<b>${esc(o.pickup)}</b></div><div>الوجهة<b>${esc(o.destination)}</b></div><div>المنطقة<b>${esc(o.pickup_zone||'—')}</b></div><div>الركاب<b>${esc(o.passengers)}</b></div></div><div class="ride-actions"><button class="primary" onclick="acceptRide('${o.ride_id}')">قبول الطلب</button></div></article>`).join(''):'<div class="empty-state"><strong>لا توجد طلبات جديدة</strong></div>'
-}
-window.acceptRide=async id=>{const {error}=await sb.rpc('accept_ride',{p_ride_id:id});if(error){alert(error.message);return}await refreshDriver()};
-async function loadActiveRide(){const {data,error}=await sb.from('ride_requests').select('*').eq('driver_id',driver.id).in('status',['accepted','on_the_way','arrived','started']).order('accepted_at',{ascending:false}).limit(1);if(error)return console.error(error);activeRide=data?.[0]||null;renderRide()}
-function renderRide(){
- if(!activeRide){$('activeRide').innerHTML='<div class="empty-state"><strong>لا توجد رحلة حالية</strong></div>';return}
- const r=activeRide,next={accepted:['on_the_way','في الطريق إلى العميل'],on_the_way:['arrived','وصلت إلى العميل'],arrived:['started','بدء الرحلة'],started:['completed','إنهاء الرحلة']}[r.status];
- $('activeRide').innerHTML=`<article class="ride-card"><strong>${esc(r.order_number)}</strong><div class="ride-grid"><div>العميل<b>${esc(r.customer_name)}</b></div><div>الهاتف<b>${esc(r.phone)}</b></div><div>الانطلاق<b>${esc(r.pickup)}</b></div><div>الوجهة<b>${esc(r.destination)}</b></div></div><div class="ride-actions"><a class="secondary" href="tel:${esc(r.phone)}">اتصال</a><a class="secondary" target="_blank" href="https://wa.me/${wa(r.phone)}">واتساب</a>${next?`<button class="primary" onclick="advanceRide('${r.id}','${next[0]}')">${next[1]}</button>`:''}</div></article>`
-}
-window.advanceRide=async(id,status)=>{const {error}=await sb.rpc('driver_update_ride_status',{p_ride_id:id,p_status:status});if(error)return alert(error.message);await refreshDriver()};
-(async()=>{const {data}=await sb.auth.getSession();if(data.session)await routeUser();else showOnly('authView')})();
+    <div class="driver-header-actions">
+
+      <div class="driver-languages">
+        <button type="button" data-lang="ar">عربي</button>
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="ur">اردو</button>
+      </div>
+
+      <a href="index.html" class="back-home">
+        الرئيسية
+      </a>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<main class="driver-page">
+
+  <!-- =========================
+       تسجيل الدخول / التسجيل
+  ========================== -->
+
+  <section id="authView" class="driver-auth-card">
+
+    <div class="driver-auth-intro">
+
+      <span class="driver-auth-icon">
+        🚕
+      </span>
+
+      <div>
+        <h1>
+          انضم إلى سائقي مشوار
+        </h1>
+
+        <p>
+          سجّل بياناتك وبيانات مركبتك.
+          بعد المراجعة والاعتماد تستطيع استقبال الطلبات تلقائيًا.
+        </p>
+      </div>
+
+    </div>
+
+
+    <div class="driver-tabs">
+
+      <button
+        id="loginTab"
+        class="active"
+        type="button"
+      >
+        دخول السائق
+      </button>
+
+      <button
+        id="registerTab"
+        type="button"
+      >
+        تسجيل سائق جديد
+      </button>
+
+    </div>
+
+
+    <!-- =========================
+         تسجيل الدخول
+    ========================== -->
+
+    <form id="loginForm" class="driver-form">
+
+      <div class="form-heading">
+
+        <h2>
+          تسجيل الدخول
+        </h2>
+
+        <p>
+          استخدم البريد وكلمة المرور الخاصة بحساب السائق.
+        </p>
+
+      </div>
+
+
+      <div class="driver-field">
+
+        <label for="loginEmail">
+          البريد الإلكتروني
+        </label>
+
+        <input
+          id="loginEmail"
+          type="email"
+          autocomplete="username"
+          placeholder="name@example.com"
+          required
+        >
+
+      </div>
+
+
+      <div class="driver-field">
+
+        <label for="loginPassword">
+          كلمة المرور
+        </label>
+
+        <input
+          id="loginPassword"
+          type="password"
+          autocomplete="current-password"
+          placeholder="••••••••"
+          required
+        >
+
+      </div>
+
+
+      <div
+        id="loginError"
+        class="driver-error hidden"
+      ></div>
+
+
+      <button
+        class="driver-primary-btn"
+        type="submit"
+      >
+        دخول السائق
+      </button>
+
+    </form>
+
+
+    <!-- =========================
+         تسجيل سائق جديد
+    ========================== -->
+
+    <form
+      id="registerForm"
+      class="driver-form hidden"
+    >
+
+      <div class="form-heading">
+
+        <h2>
+          تسجيل سائق ومركبة
+        </h2>
+
+        <p>
+          أدخل جميع البيانات بدقة.
+          سيتم مراجعة الحساب قبل تفعيله.
+        </p>
+
+      </div>
+
+
+      <!-- =========================
+           العرض التجريبي
+      ========================== -->
+
+      <div class="driver-plan-card">
+
+        <div>
+
+          <span class="plan-label">
+            العرض الحالي
+          </span>
+
+          <strong>
+            30 يومًا مجانًا
+          </strong>
+
+          <p>
+            بعد الفترة التجريبية:
+            29 درهم شهريًا فقط.
+          </p>
+
+        </div>
+
+        <div class="plan-price">
+
+          <strong>
+            29
+          </strong>
+
+          <span>
+            درهم / شهر
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           بيانات السائق
+      ========================== -->
+
+      <div class="driver-section-title">
+
+        <span>
+          1
+        </span>
+
+        <div>
+          <h3>
+            بيانات السائق
+          </h3>
+
+          <p>
+            المعلومات الشخصية والرخصة.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="driver-grid">
+
+        <div class="driver-field">
+
+          <label>
+            الاسم الكامل
+          </label>
+
+          <input
+            name="full_name"
+            type="text"
+            autocomplete="name"
+            placeholder="الاسم كما في الهوية"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            رقم الهاتف
+          </label>
+
+          <input
+            name="phone"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            dir="ltr"
+            placeholder="0501234567"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            البريد الإلكتروني
+          </label>
+
+          <input
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="name@example.com"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            كلمة المرور
+          </label>
+
+          <input
+            name="password"
+            type="password"
+            minlength="8"
+            autocomplete="new-password"
+            placeholder="8 أحرف على الأقل"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            رقم رخصة القيادة
+          </label>
+
+          <input
+            name="driving_license_no"
+            type="text"
+            placeholder="رقم رخصة القيادة"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            تاريخ انتهاء رخصة القيادة
+          </label>
+
+          <input
+            name="driving_license_expiry"
+            type="date"
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            رقم تصريح / بطاقة سائق الأجرة
+          </label>
+
+          <input
+            name="taxi_permit_no"
+            type="text"
+            placeholder="إن وجد"
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            المنطقة التي تعمل بها غالبًا
+          </label>
+
+          <select
+            name="current_zone"
+            required
+          >
+
+            <option value="">
+              اختر المنطقة
+            </option>
+
+            <option value="أم القيوين - المدينة">
+              أم القيوين - المدينة
+            </option>
+
+            <option value="السلمة">
+              السلمة
+            </option>
+
+            <option value="الراس">
+              الراس
+            </option>
+
+            <option value="الدر البيضاء">
+              الدر البيضاء
+            </option>
+
+            <option value="فلج المعلا">
+              فلج المعلا
+            </option>
+
+            <option value="كورنيش أم القيوين">
+              كورنيش أم القيوين
+            </option>
+
+            <option value="المنطقة الصناعية">
+              المنطقة الصناعية
+            </option>
+
+            <option value="أخرى">
+              أخرى
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           بيانات المركبة
+      ========================== -->
+
+      <div class="driver-section-title">
+
+        <span>
+          2
+        </span>
+
+        <div>
+
+          <h3>
+            بيانات المركبة
+          </h3>
+
+          <p>
+            بيانات سيارة الأجرة التي سيتم تشغيلها.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="driver-grid">
+
+        <div class="driver-field">
+
+          <label>
+            رقم لوحة المركبة
+          </label>
+
+          <input
+            name="plate_number"
+            type="text"
+            placeholder="مثال: A 12345"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            إمارة اللوحة
+          </label>
+
+          <select
+            name="plate_emirate"
+          >
+
+            <option value="Umm Al Quwain">
+              أم القيوين
+            </option>
+
+            <option value="Abu Dhabi">
+              أبوظبي
+            </option>
+
+            <option value="Dubai">
+              دبي
+            </option>
+
+            <option value="Sharjah">
+              الشارقة
+            </option>
+
+            <option value="Ajman">
+              عجمان
+            </option>
+
+            <option value="Ras Al Khaimah">
+              رأس الخيمة
+            </option>
+
+            <option value="Fujairah">
+              الفجيرة
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            الشركة المصنعة
+          </label>
+
+          <input
+            name="vehicle_make"
+            type="text"
+            placeholder="مثال: Toyota"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            الموديل
+          </label>
+
+          <input
+            name="vehicle_model"
+            type="text"
+            placeholder="مثال: Camry"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            سنة الصنع
+          </label>
+
+          <input
+            name="model_year"
+            type="number"
+            min="2000"
+            max="2030"
+            placeholder="2024"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            لون المركبة
+          </label>
+
+          <input
+            name="vehicle_color"
+            type="text"
+            placeholder="مثال: أبيض"
+            required
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            تاريخ انتهاء ملكية المركبة
+          </label>
+
+          <input
+            name="registration_expiry"
+            type="date"
+          >
+
+        </div>
+
+
+        <div class="driver-field">
+
+          <label>
+            تاريخ انتهاء التأمين
+          </label>
+
+          <input
+            name="insurance_expiry"
+            type="date"
+          >
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           المستندات
+      ========================== -->
+
+      <div class="driver-section-title">
+
+        <span>
+          3
+        </span>
+
+        <div>
+
+          <h3>
+            المستندات
+          </h3>
+
+          <p>
+            في النسخة الحالية يتم تسجيل البيانات أولًا،
+            ثم سنضيف رفع المستندات في الخطوة التالية.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="document-list">
+
+        <div>
+          <span>
+            ✓
+          </span>
+
+          الهوية الإماراتية
+        </div>
+
+
+        <div>
+          <span>
+            ✓
+          </span>
+
+          رخصة القيادة
+        </div>
+
+
+        <div>
+          <span>
+            ✓
+          </span>
+
+          ملكية المركبة
+        </div>
+
+
+        <div>
+          <span>
+            ✓
+          </span>
+
+          التأمين
+        </div>
+
+      </div>
+
+
+      <label class="driver-terms">
+
+        <input
+          type="checkbox"
+          required
+        >
+
+        <span>
+          أقر بأن جميع البيانات صحيحة،
+          وأوافق على مراجعة بيانات السائق والمركبة قبل تفعيل استقبال الطلبات.
+        </span>
+
+      </label>
+
+
+      <label class="driver-terms">
+
+        <input
+          type="checkbox"
+          id="termsCheckbox"
+          required
+        >
+
+        <span>
+          أوافق على
+          <a href="terms.html" target="_blank">الشروط والأحكام الخاصة بتسجيل السائقين ونقل الركاب</a>.
+        </span>
+
+      </label>
+
+
+      <div
+        id="registerError"
+        class="driver-error hidden"
+      ></div>
+
+
+      <button
+        class="driver-primary-btn"
+        type="submit"
+      >
+        إنشاء حساب السائق
+      </button>
+
+    </form>
+
+
+    <!-- =========================
+         نجاح التسجيل
+    ========================== -->
+
+    <section
+      id="registrationSuccess"
+      class="driver-auth-card hidden"
+    >
+
+      <div class="driver-auth-intro">
+
+        <span class="driver-auth-icon">
+          ✅
+        </span>
+
+        <div>
+          <h1>
+            تم استلام طلب تسجيلك
+          </h1>
+
+          <p>
+            شكرًا لاختيارك مشوار. تم إرسال بياناتك إلى الإدارة للمراجعة،
+            وسيتم تفعيل استقبال الطلبات بعد اعتماد الحساب والمركبة.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="driver-field">
+
+        <label>
+          رقم مرجعي لطلبك
+        </label>
+
+        <strong id="driverReference" dir="ltr">
+          —
+        </strong>
+
+      </div>
+
+
+      <button
+        id="goLogin"
+        class="driver-primary-btn"
+        type="button"
+      >
+        تسجيل الدخول لمتابعة حالة الحساب
+      </button>
+
+    </section>
+
+
+    <!-- =========================
+         الحساب قيد المراجعة
+    ========================== -->
+
+    <section
+      id="pendingView"
+      class="driver-auth-card hidden"
+    >
+
+      <div class="driver-auth-intro">
+
+        <span class="driver-auth-icon">
+          ⏳
+        </span>
+
+        <div>
+          <h1>
+            حسابك قيد المراجعة
+          </h1>
+
+          <p>
+            تم إرسال بياناتك إلى الإدارة.
+            سيتم تفعيل استقبال الطلبات بعد اعتماد الحساب والمركبة.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="driver-grid">
+
+        <div class="driver-field">
+          <label>السائق</label>
+          <strong id="pendingName">—</strong>
+        </div>
+
+        <div class="driver-field">
+          <label>المركبة</label>
+          <strong id="pendingCar">—</strong>
+        </div>
+
+        <div class="driver-field">
+          <label>المنطقة</label>
+          <strong id="pendingZone">—</strong>
+        </div>
+
+      </div>
+
+
+      <button
+        id="pendingLogout"
+        class="driver-secondary-btn"
+        type="button"
+      >
+        تسجيل الخروج
+      </button>
+
+    </section>
+
+
+    <!-- =========================
+         الحساب موقوف / مرفوض
+    ========================== -->
+
+    <section
+      id="suspendedView"
+      class="driver-auth-card hidden"
+    >
+
+      <div class="driver-auth-intro">
+
+        <span class="driver-auth-icon">
+          🚫
+        </span>
+
+        <div>
+          <h1>
+            حسابك موقوف
+          </h1>
+
+          <p>
+            تم إيقاف الحساب أو رفضه من قبل الإدارة.
+            تواصل مع إدارة مشوار لمزيد من التفاصيل.
+          </p>
+        </div>
+
+      </div>
+
+
+      <button
+        id="suspendedLogout"
+        class="driver-secondary-btn"
+        type="button"
+      >
+        تسجيل الخروج
+      </button>
+
+    </section>
+
+  </section>
+
+
+  <!-- =========================
+       لوحة السائق بعد الدخول
+  ========================== -->
+
+  <section
+    id="driverView"
+    class="hidden"
+  >
+
+
+    <!-- رأس لوحة السائق -->
+
+    <section class="driver-dashboard-head">
+
+      <div>
+
+        <span class="dashboard-label">
+          مشوار
+        </span>
+
+        <h1>
+          لوحة السائق
+        </h1>
+
+        <p id="driverHello">
+          مرحبًا
+        </p>
+
+      </div>
+
+
+      <button
+        id="logoutBtn"
+        class="driver-secondary-btn"
+        type="button"
+      >
+        تسجيل الخروج
+      </button>
+
+    </section>
+
+
+    <!-- الإحصائيات -->
+
+    <section class="driver-stats">
+
+      <article>
+
+        <span>
+          حالة الاعتماد
+        </span>
+
+        <strong id="approvalStat">
+          —
+        </strong>
+
+      </article>
+
+
+      <article>
+
+        <span>
+          الاشتراك
+        </span>
+
+        <strong id="subscriptionStat">
+          —
+        </strong>
+
+      </article>
+
+
+      <article>
+
+        <span>
+          حالة السائق
+        </span>
+
+        <strong id="availabilityStat">
+          —
+        </strong>
+
+      </article>
+
+    </section>
+
+
+    <!-- =========================
+         حالة التوفر
+    ========================== -->
+
+    <section class="driver-dashboard-card">
+
+      <div class="dashboard-card-heading">
+
+        <div>
+
+          <h2>
+            استقبال الطلبات
+          </h2>
+
+          <p>
+            حدد منطقتك الحالية ثم فعّل استقبال الطلبات.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="availability-grid">
+
+        <div class="driver-field">
+
+          <label for="zoneSelect">
+            المنطقة الحالية
+          </label>
+
+          <select id="zoneSelect">
+
+            <option value="أم القيوين - المدينة">
+              أم القيوين - المدينة
+            </option>
+
+            <option value="السلمة">
+              السلمة
+            </option>
+
+            <option value="الراس">
+              الراس
+            </option>
+
+            <option value="الدر البيضاء">
+              الدر البيضاء
+            </option>
+
+            <option value="فلج المعلا">
+              فلج المعلا
+            </option>
+
+            <option value="كورنيش أم القيوين">
+              كورنيش أم القيوين
+            </option>
+
+            <option value="المنطقة الصناعية">
+              المنطقة الصناعية
+            </option>
+
+            <option value="أخرى">
+              أخرى
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <button
+          id="availabilityBtn"
+          class="driver-primary-btn"
+          type="button"
+        >
+          أصبح متاحًا
+        </button>
+
+      </div>
+
+
+      <div class="availability-note">
+
+        لا يمكن تفعيل حالة «متاح»
+        إلا بعد اعتماد السائق والمركبة
+        ووجود فترة تجريبية أو اشتراك ساري.
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         الطلبات الجديدة
+    ========================== -->
+
+    <section class="driver-dashboard-card">
+
+      <div class="dashboard-card-heading">
+
+        <div>
+
+          <h2>
+            الطلبات الجديدة
+          </h2>
+
+          <p>
+            الطلبات التي أرسلها النظام إليك.
+          </p>
+
+        </div>
+
+
+        <button
+          id="refreshBtn"
+          class="driver-secondary-btn"
+          type="button"
+        >
+          تحديث
+        </button>
+
+      </div>
+
+
+      <div
+        id="offers"
+        class="ride-cards"
+      >
+
+        <div class="empty-state">
+
+          <span>
+            🚕
+          </span>
+
+          <strong>
+            لا توجد طلبات جديدة
+          </strong>
+
+          <p>
+            عند توفر طلب مناسب في منطقتك
+            سيظهر هنا تلقائيًا.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         الرحلة الحالية
+    ========================== -->
+
+    <section class="driver-dashboard-card">
+
+      <div class="dashboard-card-heading">
+
+        <div>
+
+          <h2>
+            الرحلة الحالية
+          </h2>
+
+          <p>
+            تفاصيل العميل والرحلة المقبولة.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="activeRide"
+        class="ride-cards"
+      >
+
+        <div class="empty-state">
+
+          <span>
+            ✓
+          </span>
+
+          <strong>
+            لا توجد رحلة حالية
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+  </section>
+
+</main>
+
+
+<script src="config.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="driver.js"></script>
+
+</body>
+</html>
