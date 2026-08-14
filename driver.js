@@ -41,7 +41,7 @@ async function routeUser(){
 function renderDriver(){
  $('driverHello').textContent=`مرحبًا ${driver.name||''}`;$('approvalStat').textContent=approval(driver.approval_status);
  $('subscriptionStat').textContent=driver.subscription_status==='trial'&&driver.trial_ends_at?`تجربة حتى ${new Date(driver.trial_ends_at).toLocaleDateString('ar-AE')}`:(driver.subscription_status||'—');
- $('availabilityStat').textContent=driver.is_busy?'في رحلة':driver.is_available?'متاح':'غير متاح';$('availabilityBtn').textContent=driver.is_available?'إيقاف استقبال الطلبات':'أصبح متاحًا';if(driver.current_zone)$('zoneSelect').value=driver.current_zone
+ $('availabilityStat').textContent=driver.is_busy?'في رحلة':driver.is_available?'متاح':'غير متاح';$('availabilityBtn').textContent=driver.is_available?'إيقاف استقبال الطلبات':'استقبل الطلبات';if(driver.current_zone)$('zoneSelect').value=driver.current_zone
 }
 async function refreshDriver(){const {data:u}=await sb.auth.getUser();if(!u.user)return;const {data:d}=await sb.from('drivers').select('*').eq('user_id',u.user.id).maybeSingle();if(!d)return;driver=d;const {data:v}=await sb.from('vehicles').select('*').eq('driver_id',d.id).order('created_at',{ascending:false}).limit(1);vehicle=v?.[0]||null;if(d.approval_status!=='approved'||vehicle?.approval_status!=='approved'){await routeUser();return}renderDriver();await Promise.all([loadOffers(),loadActiveRide()])}
 $('availabilityBtn').onclick=async()=>{const {error}=await sb.rpc('set_driver_availability',{p_available:!driver.is_available,p_zone:$('zoneSelect').value});if(error)return alert(error.message);await refreshDriver()};
