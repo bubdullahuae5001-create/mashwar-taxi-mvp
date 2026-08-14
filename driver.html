@@ -1,79 +1,98 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#080b0f"><title>مشوار | بوابة السائق</title><link rel="stylesheet" href="driver.css"></head>
-<body>
-<header class="driver-header"><div class="driver-header-inner">
-<a class="driver-brand" href="index.html"><span class="brand-mark"><b>M</b><i></i></span><span><strong>مشوار</strong><small>بوابة السائق</small></span></a>
-<div class="driver-header-actions"><select id="driverLang"><option value="ar">العربية</option><option value="en">English</option><option value="ur">اردو</option></select><a href="index.html">الرئيسية</a></div>
-</div></header>
+const cfg=window.APP_CONFIG||{},sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY),$=id=>document.getElementById(id);
+let driver=null,vehicle=null,activeRide=null,polling=null;
+function showOnly(id){['authView','registrationSuccess','pendingView','suspendedView','driverView'].forEach(x=>$(x)?.classList.add('hidden'));$(id)?.classList.remove('hidden')}
+function err(id,m){$(id).textContent=m;$(id).classList.remove('hidden')}function clear(id){$(id).classList.add('hidden')}
+function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function wa(p){p=String(p||'').replace(/\D/g,'');if(p.startsWith('0'))p='971'+p.slice(1);return p}
+function reference(id){return 'D-'+String(id||'').replace(/-/g,'').slice(0,8).toUpperCase()}
+function approval(s){return({pending:'قيد المراجعة',approved:'معتمد',rejected:'مرفوض',suspended:'موقوف'})[s]||s||'—'}
 
-<main class="driver-page">
-<section id="authView" class="portal-card">
-<div class="portal-intro"><div class="intro-icon">M</div><div><h1>انضم إلى سائقي مشوار</h1><p>سجل بياناتك وبيانات مركبتك، ثم تنتظر اعتماد الإدارة قبل استقبال الطلبات.</p></div></div>
-<div class="tabs"><button id="loginTab" class="active">دخول السائق</button><button id="registerTab">تسجيل سائق جديد</button></div>
+$('loginTab').onclick=()=>{$('loginForm').classList.remove('hidden');$('registerForm').classList.add('hidden');$('loginTab').classList.add('active');$('registerTab').classList.remove('active')};
+$('registerTab').onclick=()=>{$('registerForm').classList.remove('hidden');$('loginForm').classList.add('hidden');$('registerTab').classList.add('active');$('loginTab').classList.remove('active')};
+if(new URLSearchParams(location.search).get('register'))setTimeout(()=>$('registerTab').click(),0);
 
-<form id="loginForm" class="driver-form">
-<h2>دخول السائق</h2>
-<label>البريد الإلكتروني<input id="loginEmail" type="email" autocomplete="username" required></label>
-<label>كلمة المرور<input id="loginPassword" type="password" autocomplete="current-password" required></label>
-<div id="loginError" class="error hidden"></div>
-<button class="primary" type="submit">دخول السائق</button>
-</form>
+$('registerForm').onsubmit=async e=>{
+ e.preventDefault();clear('registerError');const formEl=e.currentTarget;const fd=new FormData(formEl);
+ const submitBtn=formEl.querySelector('button[type="submit"]');
+ const oldBtnText=submitBtn?submitBtn.textContent:'';
+ if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='جارٍ إنشاء الحساب...'}
+ try{
+  const metadata={account_type:'driver',full_name:String(fd.get('full_name')).trim(),phone:String(fd.get('phone')).trim(),driving_license_no:String(fd.get('driving_license_no')).trim(),driving_license_expiry:fd.get('driving_license_expiry')||null,taxi_permit_no:String(fd.get('taxi_permit_no')||'').trim(),current_zone:fd.get('current_zone'),plate_number:String(fd.get('plate_number')).trim(),plate_emirate:fd.get('plate_emirate'),vehicle_make:String(fd.get('vehicle_make')).trim(),vehicle_model:String(fd.get('vehicle_model')).trim(),model_year:Number(fd.get('model_year')),vehicle_color:String(fd.get('vehicle_color')).trim(),registration_expiry:fd.get('registration_expiry')||null,insurance_expiry:fd.get('insurance_expiry')||null};
+  const {data,error}=await sb.auth.signUp({email:String(fd.get('email')).trim(),password:fd.get('password'),options:{data:metadata}});
+  if(error){err('registerError',error.message.toLowerCase().includes('already registered')?'هذا البريد الإلكتروني مسجل مسبقًا. استخدم دخول السائق.':error.message);return}
+  try{await sb.auth.signOut();}catch(e2){console.error('sign-out after register failed:',e2)}
+  formEl.reset();$('driverReference').textContent=reference(data.user?.id);showOnly('registrationSuccess');
+ }catch(fatalError){
+  err('registerError','حدث خطأ غير متوقع: '+(fatalError.message||'تعذر إتمام التسجيل. حاول مرة أخرى.'));
+ }finally{
+  if(submitBtn){submitBtn.disabled=false;submitBtn.textContent=oldBtnText}
+ }
+};
 
-<form id="registerForm" class="driver-form hidden">
-<h2>تسجيل سائق ومركبة</h2><p class="muted">30 يومًا مجانية، ثم 29 درهمًا شهريًا.</p>
-<div class="section-title"><span>1</span><div><strong>بيانات السائق</strong><small>المعلومات الشخصية والرخصة</small></div></div>
-<div class="grid">
-<label>الاسم الكامل<input name="full_name" required></label>
-<label>رقم الهاتف<input name="phone" type="tel" dir="ltr" required></label>
-<label>البريد الإلكتروني<input name="email" type="email" required></label>
-<label>كلمة المرور<input name="password" type="password" minlength="8" required></label>
-<label>رقم رخصة القيادة<input name="driving_license_no" required></label>
-<label>انتهاء رخصة القيادة<input name="driving_license_expiry" type="date"></label>
-<label>رقم تصريح سائق الأجرة<input name="taxi_permit_no"></label>
-<label>المنطقة<select name="current_zone" required><option value="">اختر المنطقة</option><option>أم القيوين - المدينة</option><option>السلمة</option><option>الراس</option><option>الدر البيضاء</option><option>فلج المعلا</option><option>كورنيش أم القيوين</option><option>المنطقة الصناعية</option><option>أخرى</option></select></label>
-</div>
+$('goLogin').onclick=async()=>{await sb.auth.signOut();showOnly('authView');$('loginTab').click()};
+$('loginForm').onsubmit=async e=>{e.preventDefault();clear('loginError');const {error}=await sb.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){err('loginError','بيانات الدخول غير صحيحة.');return}await routeUser()};
+async function logout(){if(polling)clearInterval(polling);await sb.auth.signOut();location.reload()}
+$('logoutBtn').onclick=logout;$('pendingLogout').onclick=logout;$('suspendedLogout').onclick=logout;
 
-<div class="section-title"><span>2</span><div><strong>بيانات المركبة</strong><small>بيانات سيارة الأجرة</small></div></div>
-<div class="grid">
-<label>رقم اللوحة<input name="plate_number" required></label>
-<label>إمارة اللوحة<select name="plate_emirate"><option value="Umm Al Quwain">أم القيوين</option><option>Abu Dhabi</option><option>Dubai</option><option>Sharjah</option><option>Ajman</option><option>Ras Al Khaimah</option><option>Fujairah</option></select></label>
-<label>الشركة المصنعة<input name="vehicle_make" required></label>
-<label>الموديل<input name="vehicle_model" required></label>
-<label>سنة الصنع<input name="model_year" type="number" min="2000" max="2035" required></label>
-<label>لون المركبة<input name="vehicle_color" required></label>
-<label>انتهاء الملكية<input name="registration_expiry" type="date"></label>
-<label>انتهاء التأمين<input name="insurance_expiry" type="date"></label>
-</div>
-<label class="terms"><input type="checkbox" required><span>أقر بصحة البيانات وأوافق على مراجعة الإدارة للحساب والمركبة.</span></label>
-<div id="registerError" class="error hidden"></div>
-<button class="primary" type="submit">إنشاء حساب السائق</button>
-</form>
-</section>
+async function routeUser(){
+ const {data:u}=await sb.auth.getUser();if(!u.user){showOnly('authView');return}
+ const {data:d,error}=await sb.from('drivers').select('*').eq('user_id',u.user.id).maybeSingle();
+ if(error||!d){await sb.auth.signOut();showOnly('authView');err('loginError','لم يكتمل إنشاء ملف السائق. تواصل مع الإدارة.');return}
+ driver=d;
+ const {data:v}=await sb.from('vehicles').select('*').eq('driver_id',d.id).order('created_at',{ascending:false}).limit(1);vehicle=v?.[0]||null;
+ if(!vehicle||d.approval_status==='pending'||vehicle.approval_status==='pending'){
+  $('pendingName').textContent=d.name||'—';$('pendingCar').textContent=vehicle?`${vehicle.make||''} ${vehicle.model||''}`.trim():(d.car_type||'—');$('pendingZone').textContent=d.current_zone||'—';showOnly('pendingView');return
+ }
+ if(['suspended','rejected'].includes(d.approval_status)||['suspended','rejected'].includes(vehicle.approval_status)){showOnly('suspendedView');return}
+ if(d.approval_status!=='approved'||vehicle.approval_status!=='approved'){showOnly('pendingView');return}
+ showOnly('driverView');renderDriver();await Promise.all([loadOffers(),loadActiveRide()]);
+ if(polling)clearInterval(polling);polling=setInterval(async()=>{try{const {error}=await sb.rpc('refresh_dispatches');if(error)console.error('refresh_dispatches error:',error.message);await refreshDriver()}catch(e){console.error(e)}},10000);
+}
+function renderDriver(){
+ $('driverHello').textContent=`مرحبًا ${driver.name||''}`;$('approvalStat').textContent=approval(driver.approval_status);
+ $('subscriptionStat').textContent=driver.subscription_status==='trial'&&driver.trial_ends_at?`تجربة حتى ${new Date(driver.trial_ends_at).toLocaleDateString('ar-AE')}`:(driver.subscription_status||'—');
+ $('availabilityStat').textContent=driver.is_busy?'في رحلة':driver.is_available?'متاح':'غير متاح';$('availabilityBtn').textContent=driver.is_available?'إيقاف استقبال الطلبات':'استقبل الطلبات';if(driver.current_zone)$('zoneSelect').value=driver.current_zone
+}
+async function refreshDriver(){const {data:u}=await sb.auth.getUser();if(!u.user)return;const {data:d}=await sb.from('drivers').select('*').eq('user_id',u.user.id).maybeSingle();if(!d)return;driver=d;const {data:v}=await sb.from('vehicles').select('*').eq('driver_id',d.id).order('created_at',{ascending:false}).limit(1);vehicle=v?.[0]||null;if(d.approval_status!=='approved'||vehicle?.approval_status!=='approved'){await routeUser();return}renderDriver();await Promise.all([loadOffers(),loadActiveRide()])}
+$('availabilityBtn').onclick=async()=>{const {error}=await sb.rpc('set_driver_availability',{p_available:!driver.is_available,p_zone:$('zoneSelect').value});if(error)return alert(error.message);await refreshDriver()};
+$('refreshBtn').onclick=async()=>{
+ const btn=$('refreshBtn');const oldText=btn.textContent;btn.disabled=true;btn.textContent='جارٍ التحديث...';
+ try{
+  const {error}=await sb.rpc('refresh_dispatches');
+  if(error){alert('تعذر التحديث: '+error.message);return}
+  await refreshDriver();
+ }catch(e){alert('تعذر التحديث: '+(e.message||'خطأ غير متوقع'))}
+ finally{btn.disabled=false;btn.textContent=oldText}
+};
 
-<section id="registrationSuccess" class="portal-card centered hidden">
-<div class="success-icon">✓</div><h1>تم استلام طلب تسجيلك</h1><strong>شكرًا لاختيارك مشوار</strong><p>تم إرسال بياناتك إلى الإدارة للمراجعة. لن يتم تفعيل استقبال الطلبات قبل اعتماد الحساب والمركبة.</p><div class="reference-box"><small>مرجع التسجيل</small><b id="driverReference">—</b></div><button id="goLogin" class="primary">الذهاب إلى تسجيل الدخول</button>
-</section>
+/* ===== تنبيه صوتي عند وصول طلب جديد ===== */
+let lastOfferCount=0;
+function playNewOfferSound(){
+ try{
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.type='sine';o.frequency.value=880;
+  g.gain.setValueAtTime(0.25,ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
+  o.start();o.stop(ctx.currentTime+0.6);
+ }catch(e){console.error('sound error',e)}
+}
 
-<section id="pendingView" class="portal-card centered hidden">
-<div class="pending-icon">⏳</div><span class="status-pill pending">قيد المراجعة</span><h1>حسابك قيد المراجعة</h1><p>تم إرسال بياناتك إلى الإدارة. بعد الاعتماد ستتمكن من استقبال الطلبات.</p>
-<div class="pending-details"><div><small>السائق</small><b id="pendingName">—</b></div><div><small>المركبة</small><b id="pendingCar">—</b></div><div><small>المنطقة</small><b id="pendingZone">—</b></div></div>
-<button id="pendingLogout" class="secondary">تسجيل الخروج</button>
-</section>
-
-<section id="suspendedView" class="portal-card centered hidden">
-<div class="pending-icon">!</div><span class="status-pill suspended">موقوف</span><h1>حساب السائق موقوف مؤقتًا</h1><p>تواصل مع إدارة مشوار لمعرفة السبب.</p><button id="suspendedLogout" class="secondary">تسجيل الخروج</button>
-</section>
-
-<section id="driverView" class="hidden">
-<section class="dashboard-hero"><div><span class="eyebrow">MASHWAR DRIVER</span><h1>لوحة السائق</h1><p id="driverHello"></p></div><button id="logoutBtn" class="secondary">تسجيل الخروج</button></section>
-<div class="stats"><article><small>حالة الاعتماد</small><strong id="approvalStat"></strong></article><article><small>الاشتراك</small><strong id="subscriptionStat"></strong></article><article><small>حالة السائق</small><strong id="availabilityStat"></strong></article></div>
-
-<section class="dashboard-card"><div class="card-head"><div><h2>استقبال الطلبات</h2><p>حدد منطقتك ثم فعّل حالتك.</p></div></div><div class="availability-row"><select id="zoneSelect"><option>أم القيوين - المدينة</option><option>السلمة</option><option>الراس</option><option>الدر البيضاء</option><option>فلج المعلا</option><option>كورنيش أم القيوين</option><option>المنطقة الصناعية</option><option>أخرى</option></select><button id="availabilityBtn" class="primary">أصبح متاحًا</button></div></section>
-
-<section class="dashboard-card"><div class="card-head"><div><h2>الطلبات الجديدة</h2><p>العروض التي أرسلها النظام إليك.</p></div><button id="refreshBtn" class="secondary">تحديث</button></div><div id="offers"></div></section>
-<section class="dashboard-card"><div class="card-head"><div><h2>الرحلة الحالية</h2><p>بيانات العميل ومراحل الرحلة.</p></div></div><div id="activeRide"></div></section>
-</section>
-</main>
-<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8"></script><script src="driver.js"></script>
-</body></html>
+async function loadOffers(){
+ const {data,error}=await sb.rpc('get_driver_offers');
+ if(error){console.error(error);return}
+ const list=data||[];
+ if(list.length>lastOfferCount)playNewOfferSound();
+ lastOfferCount=list.length;
+ $('offers').innerHTML=list.length?list.map(o=>`<article class="ride-card"><strong>طلب ${esc(o.order_number)}</strong><div class="ride-grid"><div>الانطلاق<b>${esc(o.pickup)}</b></div><div>الوجهة<b>${esc(o.destination)}</b></div><div>المنطقة<b>${esc(o.pickup_zone||'—')}</b></div><div>الركاب<b>${esc(o.passengers)}</b></div></div><div class="ride-actions"><button class="primary" onclick="acceptRide('${o.ride_id}')">قبول الطلب</button></div></article>`).join(''):'<div class="empty-state"><strong>لا توجد طلبات جديدة</strong></div>'
+}
+window.acceptRide=async id=>{const {error}=await sb.rpc('accept_ride',{p_ride_id:id});if(error){alert(error.message);return}await refreshDriver()};
+async function loadActiveRide(){const {data,error}=await sb.from('ride_requests').select('*').eq('driver_id',driver.id).in('status',['accepted','on_the_way','arrived','started']).order('accepted_at',{ascending:false}).limit(1);if(error)return console.error(error);activeRide=data?.[0]||null;renderRide()}
+function renderRide(){
+ if(!activeRide){$('activeRide').innerHTML='<div class="empty-state"><strong>لا توجد رحلة حالية</strong></div>';return}
+ const r=activeRide,next={accepted:['on_the_way','في الطريق إلى العميل'],on_the_way:['arrived','وصلت إلى العميل'],arrived:['started','بدء الرحلة'],started:['completed','إنهاء الرحلة']}[r.status];
+ $('activeRide').innerHTML=`<article class="ride-card"><strong>${esc(r.order_number)}</strong><div class="ride-grid"><div>العميل<b>${esc(r.customer_name)}</b></div><div>الهاتف<b>${esc(r.phone)}</b></div><div>الانطلاق<b>${esc(r.pickup)}</b></div><div>الوجهة<b>${esc(r.destination)}</b></div></div><div class="ride-actions"><a class="secondary" href="tel:${esc(r.phone)}">اتصال</a><a class="secondary" target="_blank" href="https://wa.me/${wa(r.phone)}">واتساب</a>${next?`<button class="primary" onclick="advanceRide('${r.id}','${next[0]}')">${next[1]}</button>`:''}</div></article>`
+}
+window.advanceRide=async(id,status)=>{const {error}=await sb.rpc('driver_update_ride_status',{p_ride_id:id,p_status:status});if(error)return alert(error.message);await refreshDriver()};
+(async()=>{const {data}=await sb.auth.getSession();if(data.session)await routeUser();else showOnly('authView')})();
