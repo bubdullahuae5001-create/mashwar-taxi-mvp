@@ -1,764 +1,190 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#07090d">
-  <title>مشوار | تتبع الطلب</title>
-  <link rel="stylesheet" href="driver.css">
-</head>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07090d"><title>مشوار | تتبع الطلب</title>
+<style>
+:root{--bg:#080b0f;--card:#10151c;--yellow:#ffc400;--text:#f7f8fa;--muted:#aab2bc;--line:#242b34;--green:#22c55e}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+.container{width:min(560px,calc(100% - 32px));margin:auto}
+.hidden{display:none!important}
 
+header{height:70px;background:rgba(7,10,14,.97);border-bottom:1px solid #1c222a;display:flex;align-items:center;position:sticky;top:0}
+.header-inner{display:flex;align-items:center;justify-content:space-between;width:100%}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
+.brand b{width:38px;height:38px;border-radius:10px;background:var(--yellow);color:#111;display:grid;place-items:center;font:900 20px Arial}
+.brand small{display:block;font-size:10px;color:#9099a4}
+.back{color:#c7cdd4;text-decoration:none;font-size:13px;font-weight:800;border:1px solid #343c47;border-radius:9px;padding:8px 13px}
+
+main{padding:26px 0 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:16px}
+.intro{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
+.intro .icon{font-size:22px}
+.intro h1{font-size:19px;margin:0 0 4px}
+.intro p{margin:0;color:var(--muted);font-size:13px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{display:grid;gap:6px}
+.field label{font-size:12px;font-weight:800;color:#c7cdd4}
+.field input{border:1px solid #303844;background:#0c1015;color:#fff;border-radius:9px;padding:11px 12px;font-size:14px}
+.field input:focus{outline:none;border-color:var(--yellow)}
+.submit-btn{margin-top:14px;width:100%;border:0;background:var(--yellow);color:#111;font-weight:900;font-size:15px;padding:13px;border-radius:10px;cursor:pointer}
+.submit-btn:hover{filter:brightness(1.05)}
+
+.status-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.status-head span{display:block;color:var(--muted);font-size:11px;font-weight:700}
+.status-head h2{margin:2px 0 0;font-size:17px;letter-spacing:.5px}
+.live-dot{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#8ce0a3;font-weight:800}
+.live-dot i{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(34,197,94,.18)}
+
+.steps{display:grid;gap:0}
+.step{display:flex;gap:13px;position:relative;padding-bottom:22px}
+.step:last-child{padding-bottom:0}
+.step::before{content:'';position:absolute;top:28px;bottom:0;right:13px;width:2px;background:#232a33}
+.step:last-child::before{display:none}
+.step .dot{width:27px;height:27px;border-radius:50%;background:#1a2029;border:2px solid #2b323d;display:grid;place-items:center;font-size:12px;font-weight:900;color:#7b8492;flex-shrink:0;z-index:1}
+.step .body strong{display:block;font-size:13.5px;color:#9099a4}
+.step .body small{display:block;font-size:11.5px;color:#5f6672;margin-top:2px}
+.step.done .dot{background:var(--yellow);border-color:var(--yellow);color:#111}
+.step.done::before{background:var(--yellow)}
+.step.done .body strong{color:#fff}
+.step.current .dot{background:#1a2029;border-color:var(--yellow);color:var(--yellow);box-shadow:0 0 0 5px rgba(255,196,0,.14)}
+.step.current .body strong{color:var(--yellow)}
+.step.current .body small{color:#c7cdd4}
+
+.driver-box{margin-top:6px}
+.driver-title{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.driver-title span{font-size:20px}
+.driver-title strong{display:block;font-size:14px}
+.driver-title small{display:block;color:var(--muted);font-size:11.5px;margin-top:1px}
+.driver-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.driver-grid div{background:#0c1015;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.driver-grid span{display:block;color:var(--muted);font-size:10.5px}
+.driver-grid strong{display:block;font-size:13px;margin-top:3px}
+.driver-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.btn2{border:0;border-radius:10px;padding:12px;font-weight:900;font-size:13px;text-decoration:none;text-align:center;display:block}
+.btn2.call{background:#1a2029;color:#fff;border:1px solid #343c47}
+.btn2.wa{background:var(--yellow);color:#111}
+
+.route-box{display:flex;align-items:center;gap:12px;margin-top:6px}
+.route-box div{flex:1}
+.route-box span{display:block;color:var(--muted);font-size:11px}
+.route-box strong{display:block;font-size:13.5px;margin-top:3px}
+.route-arrow{color:#5f6672;font-size:18px}
+</style>
+</head>
 <body>
 
-<header class="driver-header">
-  <div class="driver-header-inner">
-    <a class="driver-brand" href="index.html">
-      <span class="driver-brand-icon">🚕</span>
-      <span>
-        <strong>مشوار</strong>
-        <small>تتبع الطلب</small>
-      </span>
-    </a>
+<header><div class="container header-inner">
+  <a class="brand" href="index.html"><b>M</b><span><strong style="font-size:15px">مشوار</strong><small>تتبع الطلب</small></span></a>
+  <a href="index.html" class="back">الرئيسية</a>
+</div></header>
 
-    <a href="index.html" class="back-home">
-      الرئيسية
-    </a>
-  </div>
-</header>
+<main class="container">
 
-<main class="driver-page">
-
-  <section class="driver-auth-card">
-
-    <div class="driver-auth-intro">
-
-      <span class="driver-auth-icon">
-        📍
-      </span>
-
-      <div>
-        <h1>
-          تتبع طلب السيارة
-        </h1>
-
-        <p>
-          أدخل رقم الطلب ورقم الهاتف المستخدم في الحجز.
-        </p>
+  <section class="card">
+    <div class="intro"><span class="icon">📍</span><div><h1>تتبع طلب السيارة</h1><p>أدخل رقم الطلب ورقم الهاتف المستخدم في الحجز.</p></div></div>
+    <form id="trackForm">
+      <div class="field-row">
+        <div class="field"><label for="orderNo">رقم الطلب</label><input id="orderNo" type="text" dir="ltr" placeholder="R260811-XXXXX" required></div>
+        <div class="field"><label for="phone">رقم الهاتف</label><input id="phone" type="tel" inputmode="tel" dir="ltr" placeholder="0501234567" required></div>
       </div>
-
-    </div>
-
-    <form id="trackForm" class="driver-form">
-
-      <div class="driver-grid">
-
-        <div class="driver-field">
-
-          <label for="orderNo">
-            رقم الطلب
-          </label>
-
-          <input
-            id="orderNo"
-            type="text"
-            dir="ltr"
-            placeholder="R260811-XXXXX"
-            required
-          >
-
-        </div>
-
-        <div class="driver-field">
-
-          <label for="phone">
-            رقم الهاتف
-          </label>
-
-          <input
-            id="phone"
-            type="tel"
-            inputmode="tel"
-            dir="ltr"
-            placeholder="0501234567"
-            required
-          >
-
-        </div>
-
-      </div>
-
-      <button
-        class="driver-primary-btn"
-        type="submit"
-      >
-        عرض حالة الطلب
-      </button>
-
+      <button class="submit-btn" type="submit">عرض حالة الطلب</button>
     </form>
-
   </section>
 
+  <section id="trackingResult" class="card hidden">
 
-  <section
-    id="trackingResult"
-    class="driver-dashboard-card hidden"
-  >
-
-    <div class="dashboard-card-heading">
-
-      <div>
-
-        <span class="dashboard-label">
-          حالة الطلب
-        </span>
-
-        <h2 id="trackingOrderNumber">
-          —
-        </h2>
-
-      </div>
-
+    <div class="status-head">
+      <div><span>رقم الطلب</span><h2 id="trackingOrderNumber">—</h2></div>
+      <span class="live-dot"><i></i>تحديث تلقائي</span>
     </div>
 
-
-    <div class="tracking-progress">
-
-      <div
-        class="tracking-step"
-        data-status="new"
-      >
-        <span>1</span>
-
-        <div>
-          <strong>تم استلام الطلب</strong>
-          <small>تم تسجيل طلبك بنجاح</small>
-        </div>
-      </div>
-
-
-      <div
-        class="tracking-step"
-        data-status="searching"
-      >
-        <span>2</span>
-
-        <div>
-          <strong>جاري البحث عن سائق</strong>
-          <small>يتم إرسال الطلب للسائقين المتاحين</small>
-        </div>
-      </div>
-
-
-      <div
-        class="tracking-step"
-        data-status="accepted"
-      >
-        <span>3</span>
-
-        <div>
-          <strong>تم قبول الطلب</strong>
-          <small>تم تعيين سائق للرحلة</small>
-        </div>
-      </div>
-
-
-      <div
-        class="tracking-step"
-        data-status="on_the_way"
-      >
-        <span>4</span>
-
-        <div>
-          <strong>السائق في الطريق</strong>
-          <small>السائق متجه إلى موقع الانطلاق</small>
-        </div>
-      </div>
-
-
-      <div
-        class="tracking-step"
-        data-status="arrived"
-      >
-        <span>5</span>
-
-        <div>
-          <strong>وصل السائق</strong>
-          <small>السائق وصل إلى موقعك</small>
-        </div>
-      </div>
-
-
-      <div
-        class="tracking-step"
-        data-status="started"
-      >
-        <span>6</span>
-
-        <div>
-          <strong>بدأت الرحلة</strong>
-          <small>الرحلة جارية الآن</small>
-        </div>
-      </div>
-
-
-      <div
-        class="tracking-step"
-        data-status="completed"
-      >
-        <span>✓</span>
-
-        <div>
-          <strong>اكتملت الرحلة</strong>
-          <small>نتمنى لك رحلة سعيدة</small>
-        </div>
-      </div>
-
+    <div class="steps" id="stepsList">
+      <div class="step" data-status="new"><div class="dot">1</div><div class="body"><strong>تم استلام الطلب</strong><small>تم تسجيل طلبك بنجاح</small></div></div>
+      <div class="step" data-status="searching"><div class="dot">2</div><div class="body"><strong>جاري البحث عن سائق</strong><small>يتم إرسال الطلب للسائقين المتاحين</small></div></div>
+      <div class="step" data-status="accepted"><div class="dot">3</div><div class="body"><strong>تم قبول الطلب</strong><small>تم تعيين سائق للرحلة</small></div></div>
+      <div class="step" data-status="on_the_way"><div class="dot">4</div><div class="body"><strong>السائق في الطريق</strong><small>السائق متجه إلى موقع الانطلاق</small></div></div>
+      <div class="step" data-status="arrived"><div class="dot">5</div><div class="body"><strong>وصل السائق</strong><small>السائق وصل إلى موقعك</small></div></div>
+      <div class="step" data-status="started"><div class="dot">6</div><div class="body"><strong>بدأت الرحلة</strong><small>الرحلة جارية الآن</small></div></div>
+      <div class="step" data-status="completed"><div class="dot">✓</div><div class="body"><strong>اكتملت الرحلة</strong><small>نتمنى لك رحلة سعيدة</small></div></div>
     </div>
 
-
-    <div
-      id="driverInfo"
-      class="driver-info-box hidden"
-    >
-
-      <div class="driver-info-title">
-
-        <span>
-          🚕
-        </span>
-
-        <div>
-          <strong>
-            بيانات السائق
-          </strong>
-
-          <small>
-            تم قبول طلبك
-          </small>
-        </div>
-
+    <div id="driverInfo" class="card driver-box hidden" style="margin-top:16px;margin-bottom:0">
+      <div class="driver-title"><span>🚕</span><div><strong>بيانات السائق</strong><small>تم قبول طلبك</small></div></div>
+      <div class="driver-grid">
+        <div><span>اسم السائق</span><strong id="trackingDriverName">—</strong></div>
+        <div><span>السيارة</span><strong id="trackingCarType">—</strong></div>
+        <div><span>رقم المركبة</span><strong id="trackingCarNumber">—</strong></div>
+        <div><span>الهاتف</span><strong id="trackingDriverPhone" dir="ltr">—</strong></div>
       </div>
-
-
-      <div class="driver-info-grid">
-
-        <div>
-          <span>
-            اسم السائق
-          </span>
-
-          <strong id="trackingDriverName">
-            —
-          </strong>
-        </div>
-
-
-        <div>
-          <span>
-            السيارة
-          </span>
-
-          <strong id="trackingCarType">
-            —
-          </strong>
-        </div>
-
-
-        <div>
-          <span>
-            رقم المركبة
-          </span>
-
-          <strong id="trackingCarNumber">
-            —
-          </strong>
-        </div>
-
-
-        <div>
-          <span>
-            الهاتف
-          </span>
-
-          <strong
-            id="trackingDriverPhone"
-            dir="ltr"
-          >
-            —
-          </strong>
-        </div>
-
+      <div class="driver-actions">
+        <a id="callDriver" class="btn2 call" href="#">اتصال بالسائق</a>
+        <a id="whatsappDriver" class="btn2 wa" href="#" target="_blank">واتساب</a>
       </div>
-
-
-      <div class="ride-actions">
-
-        <a
-          id="callDriver"
-          class="driver-secondary-btn"
-          href="#"
-        >
-          اتصال بالسائق
-        </a>
-
-
-        <a
-          id="whatsappDriver"
-          class="driver-primary-btn"
-          href="#"
-          target="_blank"
-        >
-          واتساب
-        </a>
-
-      </div>
-
     </div>
 
-
-    <div class="tracking-route">
-
-      <div>
-
-        <span>
-          الانطلاق
-        </span>
-
-        <strong id="trackingPickup">
-          —
-        </strong>
-
-      </div>
-
-
-      <div class="route-arrow">
-        ←
-      </div>
-
-
-      <div>
-
-        <span>
-          الوجهة
-        </span>
-
-        <strong id="trackingDestination">
-          —
-        </strong>
-
-      </div>
-
+    <div class="card route-box" style="margin-top:16px;margin-bottom:0">
+      <div><span>الانطلاق</span><strong id="trackingPickup">—</strong></div>
+      <div class="route-arrow">←</div>
+      <div><span>الوجهة</span><strong id="trackingDestination">—</strong></div>
     </div>
 
   </section>
 
 </main>
 
-
 <script src="config.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
 <script>
+const cfg=window.APP_CONFIG||{};
+const sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
+const form=document.getElementById('trackForm');
+const result=document.getElementById('trackingResult');
+const query=new URLSearchParams(window.location.search);
+const queryOrder=query.get('order');
+const queryPhone=query.get('phone');
+if(queryOrder)document.getElementById('orderNo').value=queryOrder;
+if(queryPhone)document.getElementById('phone').value=queryPhone;
 
-const cfg = window.APP_CONFIG || {};
+const statusOrder=['new','searching','accepted','on_the_way','arrived','started','completed'];
 
-const sb = supabase.createClient(
-  cfg.SUPABASE_URL,
-  cfg.SUPABASE_ANON_KEY
-);
+function normalizePhone(value){return String(value||'').replace(/\D/g,'')}
+function whatsappPhone(phone){let number=normalizePhone(phone);if(number.startsWith('0'))number='971'+number.slice(1);if(!number.startsWith('971'))number='971'+number;return number}
 
-
-const form =
-  document.getElementById(
-    'trackForm'
-  );
-
-
-const result =
-  document.getElementById(
-    'trackingResult'
-  );
-
-
-const query =
-  new URLSearchParams(
-    window.location.search
-  );
-
-
-const queryOrder =
-  query.get('order');
-
-
-const queryPhone =
-  query.get('phone');
-
-
-if(queryOrder){
-
-  document.getElementById(
-    'orderNo'
-  ).value =
-    queryOrder;
-
+function updateProgress(status){
+ const currentIndex=statusOrder.indexOf(status);
+ document.querySelectorAll('.step').forEach(step=>{
+  const stepIndex=statusOrder.indexOf(step.dataset.status);
+  step.classList.remove('done','current');
+  if(stepIndex<currentIndex)step.classList.add('done');
+  if(stepIndex===currentIndex)step.classList.add('done','current');
+ });
 }
-
-
-if(queryPhone){
-
-  document.getElementById(
-    'phone'
-  ).value =
-    queryPhone;
-
-}
-
-
-const statusOrder = [
-
-  'new',
-
-  'searching',
-
-  'accepted',
-
-  'on_the_way',
-
-  'arrived',
-
-  'started',
-
-  'completed'
-
-];
-
-
-function normalizePhone(
-  value
-){
-
-  return String(
-    value || ''
-  )
-  .replace(
-    /\D/g,
-    ''
-  );
-
-}
-
-
-function whatsappPhone(
-  phone
-){
-
-  let number =
-    normalizePhone(
-      phone
-    );
-
-
-  if(
-    number.startsWith(
-      '0'
-    )
-  ){
-
-    number =
-      '971' +
-      number.slice(
-        1
-      );
-
-  }
-
-
-  if(
-    !number.startsWith(
-      '971'
-    )
-  ){
-
-    number =
-      '971' +
-      number;
-
-  }
-
-
-  return number;
-
-}
-
-
-function updateProgress(
-  status
-){
-
-  const currentIndex =
-    statusOrder.indexOf(
-      status
-    );
-
-
-  document
-    .querySelectorAll(
-      '.tracking-step'
-    )
-    .forEach(
-      step => {
-
-        const stepStatus =
-          step.dataset.status;
-
-
-        const stepIndex =
-          statusOrder.indexOf(
-            stepStatus
-          );
-
-
-        step.classList.remove(
-          'done',
-          'current'
-        );
-
-
-        if(
-          stepIndex <
-          currentIndex
-        ){
-
-          step.classList.add(
-            'done'
-          );
-
-        }
-
-
-        if(
-          stepIndex ===
-          currentIndex
-        ){
-
-          step.classList.add(
-            'current'
-          );
-
-        }
-
-      }
-    );
-
-}
-
 
 async function trackRide(){
-
-  const orderNumber =
-    document
-      .getElementById(
-        'orderNo'
-      )
-      .value
-      .trim();
-
-
-  const phone =
-    document
-      .getElementById(
-        'phone'
-      )
-      .value
-      .trim();
-
-
-  const {
-    data,
-    error
-  } = await sb.rpc(
-    'track_ride',
-    {
-
-      p_order_number:
-        orderNumber,
-
-      p_phone:
-        phone
-
-    }
-  );
-
-
-  if(error){
-
-    alert(
-      error.message
-    );
-
-    return;
-  }
-
-
-  const ride =
-    data?.[0];
-
-
-  if(!ride){
-
-    alert(
-      'لم يتم العثور على الطلب. تأكد من رقم الطلب ورقم الهاتف.'
-    );
-
-    result.classList.add(
-      'hidden'
-    );
-
-    return;
-  }
-
-
-  result.classList.remove(
-    'hidden'
-  );
-
-
-  document.getElementById(
-    'trackingOrderNumber'
-  ).textContent =
-    ride.order_number;
-
-
-  document.getElementById(
-    'trackingPickup'
-  ).textContent =
-    ride.pickup;
-
-
-  document.getElementById(
-    'trackingDestination'
-  ).textContent =
-    ride.destination;
-
-
-  updateProgress(
-    ride.status
-  );
-
-
-  const driverBox =
-    document.getElementById(
-      'driverInfo'
-    );
-
-
-  if(
-    ride.driver_name
-  ){
-
-    driverBox.classList.remove(
-      'hidden'
-    );
-
-
-    document.getElementById(
-      'trackingDriverName'
-    ).textContent =
-      ride.driver_name;
-
-
-    document.getElementById(
-      'trackingCarType'
-    ).textContent =
-      ride.car_type ||
-      'سيارة أجرة';
-
-
-    document.getElementById(
-      'trackingCarNumber'
-    ).textContent =
-      ride.car_number ||
-      '—';
-
-
-    document.getElementById(
-      'trackingDriverPhone'
-    ).textContent =
-      ride.driver_phone ||
-      '—';
-
-
-    document.getElementById(
-      'callDriver'
-    ).href =
-      'tel:' +
-      ride.driver_phone;
-
-
-    document.getElementById(
-      'whatsappDriver'
-    ).href =
-      'https://wa.me/' +
-      whatsappPhone(
-        ride.driver_phone
-      );
-
-
-  }else{
-
-    driverBox.classList.add(
-      'hidden'
-    );
-
-  }
-
+ const orderNumber=document.getElementById('orderNo').value.trim();
+ const phone=document.getElementById('phone').value.trim();
+ const {data,error}=await sb.rpc('track_ride',{p_order_number:orderNumber,p_phone:phone});
+ if(error){alert(error.message);return}
+ const ride=data?.[0];
+ if(!ride){alert('لم يتم العثور على الطلب. تأكد من رقم الطلب ورقم الهاتف.');result.classList.add('hidden');return}
+ result.classList.remove('hidden');
+ document.getElementById('trackingOrderNumber').textContent=ride.order_number;
+ document.getElementById('trackingPickup').textContent=ride.pickup;
+ document.getElementById('trackingDestination').textContent=ride.destination;
+ updateProgress(ride.status);
+ const driverBox=document.getElementById('driverInfo');
+ if(ride.driver_name){
+  driverBox.classList.remove('hidden');
+  document.getElementById('trackingDriverName').textContent=ride.driver_name;
+  document.getElementById('trackingCarType').textContent=ride.car_type||'سيارة أجرة';
+  document.getElementById('trackingCarNumber').textContent=ride.car_number||'—';
+  document.getElementById('trackingDriverPhone').textContent=ride.driver_phone||'—';
+  document.getElementById('callDriver').href='tel:'+ride.driver_phone;
+  document.getElementById('whatsappDriver').href='https://wa.me/'+whatsappPhone(ride.driver_phone);
+ }else{driverBox.classList.add('hidden')}
 }
 
-
-form.addEventListener(
-  'submit',
-  async event => {
-
-    event.preventDefault();
-
-    await trackRide();
-
-  }
-);
-
-
-if(
-  queryOrder &&
-  queryPhone
-){
-
-  trackRide();
-
-}
-
-
-/* تحديث تلقائي كل 10 ثوانٍ */
-
-setInterval(
-  () => {
-
-    if(
-      !result.classList.contains(
-        'hidden'
-      )
-    ){
-
-      trackRide();
-
-    }
-
-  },
-  10000
-);
-
+form.addEventListener('submit',async event=>{event.preventDefault();await trackRide()});
+if(queryOrder&&queryPhone)trackRide();
+setInterval(()=>{if(!result.classList.contains('hidden'))trackRide()},10000);
 </script>
-
-</body>
-</html>
+</body></html>
