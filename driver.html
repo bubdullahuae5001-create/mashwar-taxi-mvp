@@ -4,64 +4,65 @@
 <body>
 <header class="driver-header"><div class="driver-header-inner">
 <a class="driver-brand" href="index.html"><span class="brand-mark"><b>M</b><i></i></span><span><strong>مشوار</strong><small>بوابة السائق</small></span></a>
-<div class="driver-header-actions"><select id="driverLang"><option value="ar">العربية</option><option value="en">English</option><option value="ur">اردو</option></select><a href="index.html">الرئيسية</a></div>
+<div class="driver-header-actions"><select id="driverLang" data-lang-select><option value="ar">العربية</option><option value="en">English</option><option value="ur">اردو</option></select><a href="index.html" data-i18n="nav_home">الرئيسية</a></div>
 </div></header>
 
 <main class="driver-page">
 <section id="authView" class="portal-card">
-<div class="portal-intro"><div class="intro-icon">M</div><div><h1>انضم إلى سائقي مشوار</h1><p>سجل بياناتك وبيانات مركبتك، ثم تنتظر اعتماد الإدارة قبل استقبال الطلبات.</p></div></div>
-<div class="tabs"><button id="loginTab" class="active">دخول السائق</button><button id="registerTab">تسجيل سائق جديد</button></div>
+<div class="portal-intro"><div class="intro-icon">M</div><div><h1 data-i18n="portal_title">انضم إلى سائقي مشوار</h1><p data-i18n="portal_sub">سجل بياناتك وبيانات مركبتك، ثم تنتظر اعتماد الإدارة قبل استقبال الطلبات.</p></div></div>
+<div class="tabs"><button id="loginTab" class="active" data-i18n="tab_login">دخول السائق</button><button id="registerTab" data-i18n="tab_register">تسجيل سائق جديد</button></div>
 
 <form id="loginForm" class="driver-form">
-<h2>دخول السائق</h2>
-<label>البريد الإلكتروني<input id="loginEmail" type="email" autocomplete="username" required></label>
-<label>كلمة المرور<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+<h2 data-i18n="login_heading">دخول السائق</h2>
+<label data-i18n="lbl_email"><span data-i18n="lbl_email">البريد الإلكتروني</span><input id="loginEmail" type="email" autocomplete="username" required></label>
+<label><span data-i18n="lbl_password">كلمة المرور</span><input id="loginPassword" type="password" autocomplete="current-password" required></label>
 <div id="loginError" class="error hidden"></div>
-<button class="primary" type="submit">دخول السائق</button>
+<button class="primary" type="submit" data-i18n="login_btn">دخول السائق</button>
 </form>
 
 <form id="registerForm" class="driver-form hidden">
-<h2>تسجيل سائق ومركبة</h2><p class="muted">30 يومًا مجانية، ثم 29 درهمًا شهريًا.</p>
-<div class="section-title"><span>1</span><div><strong>بيانات السائق</strong><small>المعلومات الشخصية والرخصة</small></div></div>
+<h2 data-i18n="register_heading">تسجيل سائق ومركبة</h2><p class="muted" data-i18n="register_sub">30 يومًا مجانية، ثم 29 درهمًا شهريًا.</p>
+<div class="section-title"><span>1</span><div><strong data-i18n="section1_title">بيانات السائق</strong><small data-i18n="section1_sub">المعلومات الشخصية والرخصة</small></div></div>
 <div class="grid">
-<label>الاسم الكامل<input name="full_name" required></label>
-<label>رقم الهاتف<input name="phone" type="tel" dir="ltr" required></label>
-<label>البريد الإلكتروني<input name="email" type="email" required></label>
-<label>كلمة المرور<input name="password" type="password" minlength="8" required></label>
-<label>رقم رخصة القيادة<input name="driving_license_no" required></label>
-<label>انتهاء رخصة القيادة<input name="driving_license_expiry" type="date"></label>
-<label>رقم تصريح سائق الأجرة<input name="taxi_permit_no"></label>
-<label>المنطقة<select name="current_zone" required><option value="">اختر المنطقة</option><option>أم القيوين - المدينة</option><option>السلمة</option><option>الراس</option><option>الدر البيضاء</option><option>فلج المعلا</option><option>كورنيش أم القيوين</option><option>المنطقة الصناعية</option><option>أخرى</option></select></label>
+<label><span data-i18n="lbl_full_name">الاسم الكامل</span><input name="full_name" required></label>
+<label><span data-i18n="lblPhone">رقم الهاتف</span><input name="phone" type="tel" dir="ltr" required></label>
+<label><span data-i18n="lbl_email">البريد الإلكتروني</span><input name="email" type="email" required></label>
+<label><span data-i18n="lbl_password">كلمة المرور</span><input name="password" type="password" minlength="8" required></label>
+<label><span data-i18n="lbl_license_no">رقم رخصة القيادة</span><input name="driving_license_no" required></label>
+<label><span data-i18n="lbl_license_expiry">انتهاء رخصة القيادة</span><input name="driving_license_expiry" type="date"></label>
+<label><span data-i18n="lbl_permit_no">رقم تصريح سائق الأجرة</span><input name="taxi_permit_no"></label>
+<label><span data-i18n="lblZone">المنطقة</span><select name="current_zone" required><option value="" data-i18n="select_zone_placeholder">اختر المنطقة</option><option value="أم القيوين - المدينة" data-i18n="zone_city">أم القيوين - المدينة</option><option value="السلمة" data-i18n="zone_salama">السلمة</option><option value="الراس" data-i18n="zone_ras">الراس</option><option value="الدر البيضاء" data-i18n="zone_dar_baida">الدر البيضاء</option><option value="فلج المعلا" data-i18n="zone_falaj">فلج المعلا</option><option value="كورنيش أم القيوين" data-i18n="zone_corniche">كورنيش أم القيوين</option><option value="المنطقة الصناعية" data-i18n="zone_industrial">المنطقة الصناعية</option><option value="أخرى" data-i18n="zone_other">أخرى</option></select></label>
 </div>
 
-<div class="section-title"><span>2</span><div><strong>بيانات المركبة</strong><small>بيانات سيارة الأجرة</small></div></div>
+<div class="section-title"><span>2</span><div><strong data-i18n="section2_title">بيانات المركبة</strong><small data-i18n="section2_sub">بيانات سيارة الأجرة</small></div></div>
 <div class="grid">
-<label>رقم اللوحة<input name="plate_number" required></label>
-<label>إمارة اللوحة<select name="plate_emirate"><option value="Umm Al Quwain">أم القيوين</option><option>Abu Dhabi</option><option>Dubai</option><option>Sharjah</option><option>Ajman</option><option>Ras Al Khaimah</option><option>Fujairah</option></select></label>
-<label>الشركة المصنعة<input name="vehicle_make" required></label>
-<label>الموديل<input name="vehicle_model" required></label>
-<label>سنة الصنع<input name="model_year" type="number" min="2000" max="2035" required></label>
-<label>لون المركبة<input name="vehicle_color" required></label>
-<label>انتهاء الملكية<input name="registration_expiry" type="date"></label>
-<label>انتهاء التأمين<input name="insurance_expiry" type="date"></label>
+<label><span data-i18n="lbl_plate_number">رقم اللوحة</span><input name="plate_number" required></label>
+<label><span data-i18n="lbl_plate_emirate">إمارة اللوحة</span><select name="plate_emirate"><option value="Umm Al Quwain">أم القيوين</option><option>Abu Dhabi</option><option>Dubai</option><option>Sharjah</option><option>Ajman</option><option>Ras Al Khaimah</option><option>Fujairah</option></select></label>
+<label><span data-i18n="lbl_make">الشركة المصنعة</span><input name="vehicle_make" required></label>
+<label><span data-i18n="lbl_model">الموديل</span><input name="vehicle_model" required></label>
+<label><span data-i18n="lbl_year">سنة الصنع</span><input name="model_year" type="number" min="2000" max="2035" required></label>
+<label><span data-i18n="lbl_color">لون المركبة</span><input name="vehicle_color" required></label>
+<label><span data-i18n="lbl_registration_expiry">انتهاء الملكية</span><input name="registration_expiry" type="date"></label>
+<label><span data-i18n="lbl_insurance_expiry">انتهاء التأمين</span><input name="insurance_expiry" type="date"></label>
 </div>
 <section class="driver-consent" aria-labelledby="consentTitle">
 <div class="consent-head">
-<div><strong id="consentTitle">الإقرارات والشروط الإلزامية</strong><small>لن يُنشأ الحساب دون الموافقة على جميع البنود.</small></div>
-<button id="openTerms" class="terms-link" type="button">قراءة الشروط كاملة</button>
+<div><strong id="consentTitle" data-i18n="consent_title">الإقرارات والشروط الإلزامية</strong><small data-i18n="consent_sub">لن يُنشأ الحساب دون الموافقة على جميع البنود.</small></div>
+<button id="openTerms" class="terms-link" type="button" data-i18n="open_terms_btn">قراءة الشروط كاملة</button>
 </div>
-<label class="terms"><input name="data_declaration" type="checkbox" required><span>أقر بأن جميع بياناتي ووثائقي وبيانات المركبة صحيحة وسارية، وأوافق على مراجعتها والتحقق منها من قبل إدارة مشوار.</span></label>
-<label class="terms"><input name="transport_terms" type="checkbox" required><span>قرأت ووافقت على <button id="inlineTerms" class="inline-link" type="button">شروط وضوابط نقل الركاب وسياسة استخدام منصة مشوار</button>، وأتعهد بالالتزام بها.</span></label>
+<label class="terms"><input name="data_declaration" type="checkbox" required><span data-i18n="consent1">أقر بأن جميع بياناتي ووثائقي وبيانات المركبة صحيحة وسارية، وأوافق على مراجعتها والتحقق منها من قبل إدارة مشوار.</span></label>
+<label class="terms"><input name="transport_terms" type="checkbox" required><span><span data-i18n="consent2_pre">قرأت ووافقت على</span> <button id="inlineTerms" class="inline-link" type="button" data-i18n="consent2_link">شروط وضوابط نقل الركاب وسياسة استخدام منصة مشوار</button><span data-i18n="consent2_post">، وأتعهد بالالتزام بها.</span></span></label>
 </section>
 <div id="registerError" class="error hidden"></div>
-<button class="primary" type="submit">إنشاء حساب السائق</button>
+<button class="primary" type="submit" data-i18n="register_submit">إنشاء حساب السائق</button>
 </form>
 </section>
 
 <dialog id="termsDialog" class="terms-dialog" aria-labelledby="termsDialogTitle">
-<div class="terms-dialog-head"><div><span>مشوار</span><h2 id="termsDialogTitle">شروط وضوابط تسجيل السائق ونقل الركاب</h2></div><button id="closeTermsX" type="button" aria-label="إغلاق">×</button></div>
+<div class="terms-dialog-head"><div><span>مشوار</span><h2 id="termsDialogTitle" data-i18n="terms_dialog_title">شروط وضوابط تسجيل السائق ونقل الركاب</h2></div><button id="closeTermsX" type="button" aria-label="إغلاق">×</button></div>
 <div class="terms-content">
-<p class="terms-notice"><strong>تنبيه مهم:</strong> التسجيل في منصة مشوار لا يُعد ترخيصًا حكوميًا لمزاولة نشاط نقل الركاب، ولا يُفعّل الحساب إلا بعد اعتماد الإدارة والتحقق من أهلية السائق والمركبة.</p>
+<p class="terms-notice" data-i18n="terms_notice"><strong>تنبيه مهم:</strong> التسجيل في منصة مشوار لا يُعد ترخيصًا حكوميًا لمزاولة نشاط نقل الركاب، ولا يُفعّل الحساب إلا بعد اعتماد الإدارة والتحقق من أهلية السائق والمركبة.</p>
+<p class="terms-version" data-i18n="terms_lang_note" style="margin-bottom:12px">المحتوى القانوني أدناه معروض باللغة العربية فقط حاليًا.</p>
 <ol>
 <li><strong>الأهلية والتراخيص:</strong> أتعهد بأنني مستوفٍ لجميع التراخيص والتصاريح والموافقات الرسمية اللازمة لنقل الركاب في الإمارة، وأنها سارية طوال فترة استخدام المنصة.</li>
 <li><strong>صحة البيانات:</strong> أتحمل المسؤولية عن صحة بيانات الهوية ورخصة القيادة وتصريح مزاولة المهنة وملكية المركبة والتأمين وأي مستندات مقدمة.</li>
@@ -78,88 +79,88 @@
 </ol>
 <p class="terms-version">نسخة الشروط: MASHWAR-DRIVER-TERMS-2026-08-15</p>
 </div>
-<div class="terms-dialog-actions"><button id="acceptTerms" class="primary" type="button">قرأت الشروط وأوافق عليها</button><button id="closeTerms" class="secondary" type="button">إغلاق</button></div>
+<div class="terms-dialog-actions"><button id="acceptTerms" class="primary" type="button" data-i18n="accept_terms_btn">قرأت الشروط وأوافق عليها</button><button id="closeTerms" class="secondary" type="button" data-i18n="close">إغلاق</button></div>
 </dialog>
 
 <section id="registrationSuccess" class="portal-card centered hidden">
-<div class="success-icon">✓</div><h1>تم استلام طلب تسجيلك</h1><strong>شكرًا لاختيارك مشوار</strong><p>تم إرسال بياناتك إلى الإدارة للمراجعة. لن يتم تفعيل استقبال الطلبات قبل اعتماد الحساب والمركبة.</p><div class="reference-box"><small>مرجع التسجيل</small><b id="driverReference">—</b></div><button id="goLogin" class="primary">الذهاب إلى تسجيل الدخول</button>
+<div class="success-icon">✓</div><h1 data-i18n="registration_success_title">تم استلام طلب تسجيلك</h1><strong data-i18n="thanksText">شكرًا لاختيارك مشوار</strong><p data-i18n="registration_success_text">تم إرسال بياناتك إلى الإدارة للمراجعة. لن يتم تفعيل استقبال الطلبات قبل اعتماد الحساب والمركبة.</p><div class="reference-box"><small data-i18n="reference_label">مرجع التسجيل</small><b id="driverReference">—</b></div><button id="goLogin" class="primary" data-i18n="go_login_btn">الذهاب إلى تسجيل الدخول</button>
 </section>
 
 <section id="pendingView" class="portal-card centered hidden">
-<div class="pending-icon">⏳</div><span class="status-pill pending">قيد المراجعة</span><h1>حسابك قيد المراجعة</h1><p>تم إرسال بياناتك إلى الإدارة. بعد الاعتماد ستتمكن من استقبال الطلبات.</p>
-<div class="pending-details"><div><small>السائق</small><b id="pendingName">—</b></div><div><small>المركبة</small><b id="pendingCar">—</b></div><div><small>المنطقة</small><b id="pendingZone">—</b></div></div>
-<button id="pendingLogout" class="secondary">تسجيل الخروج</button>
+<div class="pending-icon">⏳</div><span class="status-pill pending" data-i18n="pending_status_pill">قيد المراجعة</span><h1 data-i18n="pending_title">حسابك قيد المراجعة</h1><p data-i18n="pending_text">تم إرسال بياناتك إلى الإدارة. بعد الاعتماد ستتمكن من استقبال الطلبات.</p>
+<div class="pending-details"><div><small data-i18n="pending_label_driver">السائق</small><b id="pendingName">—</b></div><div><small data-i18n="pending_label_car">المركبة</small><b id="pendingCar">—</b></div><div><small data-i18n="lblZone">المنطقة</small><b id="pendingZone">—</b></div></div>
+<button id="pendingLogout" class="secondary" data-i18n="logout_btn">تسجيل الخروج</button>
 </section>
 
 <section id="suspendedView" class="portal-card centered hidden">
-<div class="pending-icon">!</div><span class="status-pill suspended">موقوف</span><h1>حساب السائق موقوف مؤقتًا</h1><p>تواصل مع إدارة مشوار لمعرفة السبب.</p><button id="suspendedLogout" class="secondary">تسجيل الخروج</button>
+<div class="pending-icon">!</div><span class="status-pill suspended" data-i18n="suspended_status_pill">موقوف</span><h1 data-i18n="suspended_title">حساب السائق موقوف مؤقتًا</h1><p data-i18n="suspended_text">تواصل مع إدارة مشوار لمعرفة السبب.</p><button id="suspendedLogout" class="secondary" data-i18n="logout_btn">تسجيل الخروج</button>
 </section>
 
 <section id="driverView" class="hidden">
-<section class="dashboard-hero"><div><span class="eyebrow">MASHWAR DRIVER</span><h1>لوحة السائق</h1><p id="driverHello"></p></div><div style="display:flex;gap:8px"><button id="settingsBtn" class="secondary">الإعدادات</button><button id="logoutBtn" class="secondary">تسجيل الخروج</button></div></section>
-<div class="stats"><article><small>حالة الاعتماد</small><strong id="approvalStat"></strong></article><article><small>الاشتراك</small><strong id="subscriptionStat"></strong></article><article><small>حالة السائق</small><strong id="availabilityStat"></strong></article></div>
+<section class="dashboard-hero"><div><span class="eyebrow">MASHWAR DRIVER</span><h1 data-i18n="dashboard_title">لوحة السائق</h1><p id="driverHello"></p></div><div style="display:flex;gap:8px"><button id="settingsBtn" class="secondary" data-i18n="settings_btn">الإعدادات</button><button id="logoutBtn" class="secondary" data-i18n="logout_btn">تسجيل الخروج</button></div></section>
+<div class="stats"><article><small data-i18n="stat_approval">حالة الاعتماد</small><strong id="approvalStat"></strong></article><article><small data-i18n="stat_subscription">الاشتراك</small><strong id="subscriptionStat"></strong></article><article><small data-i18n="stat_availability">حالة السائق</small><strong id="availabilityStat"></strong></article></div>
 
-<section class="dashboard-card"><div class="card-head"><div><h2>استقبال الطلبات</h2><p>حدد منطقتك ثم فعّل حالتك.</p></div></div><div class="availability-row"><select id="zoneSelect"><option>أم القيوين - المدينة</option><option>السلمة</option><option>الراس</option><option>الدر البيضاء</option><option>فلج المعلا</option><option>كورنيش أم القيوين</option><option>المنطقة الصناعية</option><option>أخرى</option></select><button id="availabilityBtn" class="primary">أصبح متاحًا</button></div></section>
+<section class="dashboard-card"><div class="card-head"><div><h2 data-i18n="card_availability_title">استقبال الطلبات</h2><p data-i18n="card_availability_sub">حدد منطقتك ثم فعّل حالتك.</p></div></div><div class="availability-row"><select id="zoneSelect"><option value="أم القيوين - المدينة" data-i18n="zone_city">أم القيوين - المدينة</option><option value="السلمة" data-i18n="zone_salama">السلمة</option><option value="الراس" data-i18n="zone_ras">الراس</option><option value="الدر البيضاء" data-i18n="zone_dar_baida">الدر البيضاء</option><option value="فلج المعلا" data-i18n="zone_falaj">فلج المعلا</option><option value="كورنيش أم القيوين" data-i18n="zone_corniche">كورنيش أم القيوين</option><option value="المنطقة الصناعية" data-i18n="zone_industrial">المنطقة الصناعية</option><option value="أخرى" data-i18n="zone_other">أخرى</option></select><button id="availabilityBtn" class="primary">أصبح متاحًا</button></div></section>
 
-<section class="dashboard-card"><div class="card-head"><div><h2>الطلبات الجديدة</h2><p>العروض التي أرسلها النظام إليك.</p></div><button id="refreshBtn" class="secondary">تحديث</button></div><div id="offers"></div></section>
-<section class="dashboard-card"><div class="card-head"><div><h2>الرحلة الحالية</h2><p>بيانات العميل ومراحل الرحلة.</p></div></div><div id="activeRide"></div></section>
+<section class="dashboard-card"><div class="card-head"><div><h2 data-i18n="card_offers_title">الطلبات الجديدة</h2><p data-i18n="card_offers_sub">العروض التي أرسلها النظام إليك.</p></div><button id="refreshBtn" class="secondary" data-i18n="refresh_btn">تحديث</button></div><div id="offers"></div></section>
+<section class="dashboard-card"><div class="card-head"><div><h2 data-i18n="card_active_ride_title">الرحلة الحالية</h2><p data-i18n="card_active_ride_sub">بيانات العميل ومراحل الرحلة.</p></div></div><div id="activeRide"></div></section>
 </section>
 
 <section id="settingsView" class="hidden">
-<section class="dashboard-hero"><div><span class="eyebrow">MASHWAR DRIVER</span><h1>الإعدادات</h1><p>تحديث بياناتك الأساسية وكلمة المرور.</p></div><button id="backToDashboard" class="secondary">رجوع للوحة</button></section>
+<section class="dashboard-hero"><div><span class="eyebrow">MASHWAR DRIVER</span><h1 data-i18n="settings_title">الإعدادات</h1><p data-i18n="settings_sub">تحديث بياناتك الأساسية وكلمة المرور.</p></div><button id="backToDashboard" class="secondary" data-i18n="back_to_dashboard">رجوع للوحة</button></section>
 
 <section class="dashboard-card">
-<div class="card-head"><div><h2>البيانات الأساسية</h2><p>الاسم، رقم الهاتف، ومنطقة العمل.</p></div></div>
+<div class="card-head"><div><h2 data-i18n="settings_profile_title">البيانات الأساسية</h2><p data-i18n="settings_profile_sub">الاسم، رقم الهاتف، ومنطقة العمل.</p></div></div>
 <form id="profileSettingsForm" class="driver-form">
 <div class="grid">
-<label>الاسم الكامل<input name="name" required></label>
-<label>رقم الهاتف<input name="phone" type="tel" dir="ltr" required></label>
+<label><span data-i18n="lbl_full_name">الاسم الكامل</span><input name="name" required></label>
+<label><span data-i18n="lblPhone">رقم الهاتف</span><input name="phone" type="tel" dir="ltr" required></label>
 </div>
-<label>منطقة العمل<select name="current_zone"><option>أم القيوين - المدينة</option><option>السلمة</option><option>الراس</option><option>الدر البيضاء</option><option>فلج المعلا</option><option>كورنيش أم القيوين</option><option>المنطقة الصناعية</option><option>أخرى</option></select></label>
+<label><span data-i18n="lblZone">منطقة العمل</span><select name="current_zone"><option value="أم القيوين - المدينة" data-i18n="zone_city">أم القيوين - المدينة</option><option value="السلمة" data-i18n="zone_salama">السلمة</option><option value="الراس" data-i18n="zone_ras">الراس</option><option value="الدر البيضاء" data-i18n="zone_dar_baida">الدر البيضاء</option><option value="فلج المعلا" data-i18n="zone_falaj">فلج المعلا</option><option value="كورنيش أم القيوين" data-i18n="zone_corniche">كورنيش أم القيوين</option><option value="المنطقة الصناعية" data-i18n="zone_industrial">المنطقة الصناعية</option><option value="أخرى" data-i18n="zone_other">أخرى</option></select></label>
 <div id="profileSettingsError" class="error hidden"></div>
 <div id="profileSettingsSuccess" class="error hidden" style="background:#153c28;color:#4ee195"></div>
-<button class="primary" type="submit">حفظ البيانات الأساسية</button>
+<button class="primary" type="submit" data-i18n="save_profile_btn">حفظ البيانات الأساسية</button>
 </form>
 </section>
 
 <section class="dashboard-card">
-<div class="card-head"><div><h2>بيانات المركبة</h2><p>الشركة المصنعة، الموديل، سنة الصنع، اللون.</p></div></div>
+<div class="card-head"><div><h2 data-i18n="settings_vehicle_title">بيانات المركبة</h2><p data-i18n="settings_vehicle_sub">الشركة المصنعة، الموديل، سنة الصنع، اللون.</p></div></div>
 <form id="vehicleSettingsForm" class="driver-form">
 <div class="grid">
-<label>الشركة المصنعة<input name="make" required></label>
-<label>الموديل<input name="model" required></label>
-<label>سنة الصنع<input name="model_year" type="number" min="2000" max="2035" required></label>
-<label>لون المركبة<input name="color" required></label>
+<label><span data-i18n="lbl_make">الشركة المصنعة</span><input name="make" required></label>
+<label><span data-i18n="lbl_model">الموديل</span><input name="model" required></label>
+<label><span data-i18n="lbl_year">سنة الصنع</span><input name="model_year" type="number" min="2000" max="2035" required></label>
+<label><span data-i18n="lbl_color">لون المركبة</span><input name="color" required></label>
 </div>
-<p class="muted">لتغيير رقم اللوحة أو إمارة اللوحة، تواصل مع إدارة مشوار مباشرة.</p>
+<p class="muted" data-i18n="vehicle_plate_note">لتغيير رقم اللوحة أو إمارة اللوحة، تواصل مع إدارة مشوار مباشرة.</p>
 <div id="vehicleSettingsError" class="error hidden"></div>
 <div id="vehicleSettingsSuccess" class="error hidden" style="background:#153c28;color:#4ee195"></div>
-<button class="primary" type="submit">حفظ بيانات المركبة</button>
+<button class="primary" type="submit" data-i18n="save_vehicle_btn">حفظ بيانات المركبة</button>
 </form>
 </section>
 
 <section class="dashboard-card">
-<div class="card-head"><div><h2>البريد الإلكتروني</h2><p>تغيير بريد الدخول — يتطلب تأكيدًا من صندوق البريد الجديد.</p></div></div>
+<div class="card-head"><div><h2 data-i18n="settings_email_title">البريد الإلكتروني</h2><p data-i18n="settings_email_sub">تغيير بريد الدخول — يتطلب تأكيدًا من صندوق البريد الجديد.</p></div></div>
 <form id="emailSettingsForm" class="driver-form">
-<label>البريد الإلكتروني الجديد<input name="new_email" type="email" required></label>
+<label><span data-i18n="lbl_new_email">البريد الإلكتروني الجديد</span><input name="new_email" type="email" required></label>
 <div id="emailSettingsError" class="error hidden"></div>
 <div id="emailSettingsSuccess" class="error hidden" style="background:#153c28;color:#4ee195"></div>
-<button class="primary" type="submit">إرسال رابط التأكيد</button>
+<button class="primary" type="submit" data-i18n="send_confirm_btn">إرسال رابط التأكيد</button>
 </form>
 </section>
 
 <section class="dashboard-card">
-<div class="card-head"><div><h2>كلمة المرور</h2><p>يفضّل استخدام كلمة مرور قوية غير مستخدمة بمواقع أخرى.</p></div></div>
+<div class="card-head"><div><h2 data-i18n="settings_password_title">كلمة المرور</h2><p data-i18n="settings_password_sub">يفضّل استخدام كلمة مرور قوية غير مستخدمة بمواقع أخرى.</p></div></div>
 <form id="passwordSettingsForm" class="driver-form">
-<label>كلمة المرور الجديدة<input name="new_password" type="password" minlength="8" required></label>
-<label>تأكيد كلمة المرور<input name="confirm_password" type="password" minlength="8" required></label>
+<label><span data-i18n="lbl_new_password">كلمة المرور الجديدة</span><input name="new_password" type="password" minlength="8" required></label>
+<label><span data-i18n="lbl_confirm_password">تأكيد كلمة المرور</span><input name="confirm_password" type="password" minlength="8" required></label>
 <div id="passwordSettingsError" class="error hidden"></div>
 <div id="passwordSettingsSuccess" class="error hidden" style="background:#153c28;color:#4ee195"></div>
-<button class="primary" type="submit">تحديث كلمة المرور</button>
+<button class="primary" type="submit" data-i18n="update_password_btn">تحديث كلمة المرور</button>
 </form>
 </section>
 </section>
 
 </main>
-<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8"></script><script src="driver.js"></script>
+<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8"></script><script src="i18n.js"></script><script src="driver.js"></script>
 </body></html>
