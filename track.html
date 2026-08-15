@@ -12,7 +12,9 @@ header{height:70px;background:rgba(7,10,14,.97);border-bottom:1px solid #1c222a;
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
 .brand b{width:38px;height:38px;border-radius:10px;background:var(--yellow);color:#111;display:grid;place-items:center;font:900 20px Arial}
 .brand small{display:block;font-size:10px;color:#9099a4}
+.header-actions{display:flex;align-items:center;gap:8px}
 .back{color:#c7cdd4;text-decoration:none;font-size:13px;font-weight:800;border:1px solid #343c47;border-radius:9px;padding:8px 13px}
+.header-actions select{background:#151b22;color:#fff;border:1px solid #303844;border-radius:9px;padding:8px 10px;font-size:12px;cursor:pointer;outline:none}
 
 main{padding:26px 0 60px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:16px}
@@ -73,58 +75,61 @@ main{padding:26px 0 60px}
 <body>
 
 <header><div class="container header-inner">
-  <a class="brand" href="index.html"><b>M</b><span><strong style="font-size:15px">مشوار</strong><small>تتبع الطلب</small></span></a>
-  <a href="index.html" class="back">الرئيسية</a>
+  <a class="brand" href="index.html"><b>M</b><span><strong style="font-size:15px">مشوار</strong><small data-i18n="track_subtitle">تتبع الطلب</small></span></a>
+  <div class="header-actions">
+    <select id="trackLang" data-lang-select><option value="ar">العربية</option><option value="en">English</option><option value="ur">اردو</option></select>
+    <a href="index.html" class="back" data-i18n="nav_home">الرئيسية</a>
+  </div>
 </div></header>
 
 <main class="container">
 
   <section class="card">
-    <div class="intro"><span class="icon">📍</span><div><h1>تتبع طلب السيارة</h1><p>أدخل رقم الطلب ورقم الهاتف المستخدم في الحجز.</p></div></div>
+    <div class="intro"><span class="icon">📍</span><div><h1 data-i18n="track_intro_title">تتبع طلب السيارة</h1><p data-i18n="track_intro_sub">أدخل رقم الطلب ورقم الهاتف المستخدم في الحجز.</p></div></div>
     <form id="trackForm">
       <div class="field-row">
-        <div class="field"><label for="orderNo">رقم الطلب</label><input id="orderNo" type="text" dir="ltr" placeholder="R260811-XXXXX" required></div>
-        <div class="field"><label for="phone">رقم الهاتف</label><input id="phone" type="tel" inputmode="tel" dir="ltr" placeholder="0501234567" required></div>
+        <div class="field"><label for="orderNo" data-i18n="lbl_order_no">رقم الطلب</label><input id="orderNo" type="text" dir="ltr" data-i18n-placeholder="order_placeholder" placeholder="R260811-XXXXX" required></div>
+        <div class="field"><label for="phone" data-i18n="lblPhone">رقم الهاتف</label><input id="phone" type="tel" inputmode="tel" dir="ltr" data-i18n-placeholder="phone_placeholder" placeholder="0501234567" required></div>
       </div>
-      <button class="submit-btn" type="submit">عرض حالة الطلب</button>
+      <button class="submit-btn" type="submit" data-i18n="track_submit_btn">عرض حالة الطلب</button>
     </form>
   </section>
 
   <section id="trackingResult" class="card hidden">
 
     <div class="status-head">
-      <div><span>رقم الطلب</span><h2 id="trackingOrderNumber">—</h2></div>
-      <span class="live-dot"><i></i>تحديث تلقائي</span>
+      <div><span data-i18n="order_number_label">رقم الطلب</span><h2 id="trackingOrderNumber">—</h2></div>
+      <span class="live-dot"><i></i><span data-i18n="live_update">تحديث تلقائي</span></span>
     </div>
 
     <div class="steps" id="stepsList">
-      <div class="step" data-status="new"><div class="dot">1</div><div class="body"><strong>تم استلام الطلب</strong><small>تم تسجيل طلبك بنجاح</small></div></div>
-      <div class="step" data-status="searching"><div class="dot">2</div><div class="body"><strong>جاري البحث عن سائق</strong><small>يتم إرسال الطلب للسائقين المتاحين</small></div></div>
-      <div class="step" data-status="accepted"><div class="dot">3</div><div class="body"><strong>تم قبول الطلب</strong><small>تم تعيين سائق للرحلة</small></div></div>
-      <div class="step" data-status="on_the_way"><div class="dot">4</div><div class="body"><strong>السائق في الطريق</strong><small>السائق متجه إلى موقع الانطلاق</small></div></div>
-      <div class="step" data-status="arrived"><div class="dot">5</div><div class="body"><strong>وصل السائق</strong><small>السائق وصل إلى موقعك</small></div></div>
-      <div class="step" data-status="started"><div class="dot">6</div><div class="body"><strong>بدأت الرحلة</strong><small>الرحلة جارية الآن</small></div></div>
-      <div class="step" data-status="completed"><div class="dot">✓</div><div class="body"><strong>اكتملت الرحلة</strong><small>نتمنى لك رحلة سعيدة</small></div></div>
+      <div class="step" data-status="new"><div class="dot">1</div><div class="body"><strong data-i18n="step1_t">تم استلام الطلب</strong><small data-i18n="step1_s">تم تسجيل طلبك بنجاح</small></div></div>
+      <div class="step" data-status="searching"><div class="dot">2</div><div class="body"><strong data-i18n="step2_t">جاري البحث عن سائق</strong><small data-i18n="step2_s">يتم إرسال الطلب للسائقين المتاحين</small></div></div>
+      <div class="step" data-status="accepted"><div class="dot">3</div><div class="body"><strong data-i18n="step3_t">تم قبول الطلب</strong><small data-i18n="step3_s">تم تعيين سائق للرحلة</small></div></div>
+      <div class="step" data-status="on_the_way"><div class="dot">4</div><div class="body"><strong data-i18n="step4_t">السائق في الطريق</strong><small data-i18n="step4_s">السائق متجه إلى موقع الانطلاق</small></div></div>
+      <div class="step" data-status="arrived"><div class="dot">5</div><div class="body"><strong data-i18n="step5_t">وصل السائق</strong><small data-i18n="step5_s">السائق وصل إلى موقعك</small></div></div>
+      <div class="step" data-status="started"><div class="dot">6</div><div class="body"><strong data-i18n="step6_t">بدأت الرحلة</strong><small data-i18n="step6_s">الرحلة جارية الآن</small></div></div>
+      <div class="step" data-status="completed"><div class="dot">✓</div><div class="body"><strong data-i18n="step7_t">اكتملت الرحلة</strong><small data-i18n="step7_s">نتمنى لك رحلة سعيدة</small></div></div>
     </div>
 
     <div id="driverInfo" class="card driver-box hidden" style="margin-top:16px;margin-bottom:0">
-      <div class="driver-title"><span>🚕</span><div><strong>بيانات السائق</strong><small>تم قبول طلبك</small></div></div>
+      <div class="driver-title"><span>🚕</span><div><strong data-i18n="driver_info_title">بيانات السائق</strong><small data-i18n="driver_info_sub">تم قبول طلبك</small></div></div>
       <div class="driver-grid">
-        <div><span>اسم السائق</span><strong id="trackingDriverName">—</strong></div>
-        <div><span>السيارة</span><strong id="trackingCarType">—</strong></div>
-        <div><span>رقم المركبة</span><strong id="trackingCarNumber">—</strong></div>
-        <div><span>الهاتف</span><strong id="trackingDriverPhone" dir="ltr">—</strong></div>
+        <div><span data-i18n="lbl_driver_name">اسم السائق</span><strong id="trackingDriverName">—</strong></div>
+        <div><span data-i18n="lbl_car_type">السيارة</span><strong id="trackingCarType">—</strong></div>
+        <div><span data-i18n="lbl_car_number">رقم المركبة</span><strong id="trackingCarNumber">—</strong></div>
+        <div><span data-i18n="lblPhone">الهاتف</span><strong id="trackingDriverPhone" dir="ltr">—</strong></div>
       </div>
       <div class="driver-actions">
-        <a id="callDriver" class="btn2 call" href="#">اتصال بالسائق</a>
-        <a id="whatsappDriver" class="btn2 wa" href="#" target="_blank">واتساب</a>
+        <a id="callDriver" class="btn2 call" href="#" data-i18n="call_btn">اتصال بالسائق</a>
+        <a id="whatsappDriver" class="btn2 wa" href="#" target="_blank" data-i18n="whatsapp_btn">واتساب</a>
       </div>
     </div>
 
     <div class="card route-box" style="margin-top:16px;margin-bottom:0">
-      <div><span>الانطلاق</span><strong id="trackingPickup">—</strong></div>
+      <div><span data-i18n="lblPickup">الانطلاق</span><strong id="trackingPickup">—</strong></div>
       <div class="route-arrow">←</div>
-      <div><span>الوجهة</span><strong id="trackingDestination">—</strong></div>
+      <div><span data-i18n="lblDestination">الوجهة</span><strong id="trackingDestination">—</strong></div>
     </div>
 
   </section>
@@ -133,6 +138,7 @@ main{padding:26px 0 60px}
 
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="i18n.js"></script>
 <script>
 const cfg=window.APP_CONFIG||{};
 const sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY);
@@ -159,13 +165,19 @@ function updateProgress(status){
  });
 }
 
+let lastRide=null;
 async function trackRide(){
  const orderNumber=document.getElementById('orderNo').value.trim();
  const phone=document.getElementById('phone').value.trim();
  const {data,error}=await sb.rpc('track_ride',{p_order_number:orderNumber,p_phone:phone});
  if(error){alert(error.message);return}
  const ride=data?.[0];
- if(!ride){alert('لم يتم العثور على الطلب. تأكد من رقم الطلب ورقم الهاتف.');result.classList.add('hidden');return}
+ if(!ride){alert(t('not_found_alert'));result.classList.add('hidden');return}
+ lastRide=ride;
+ renderRide();
+}
+function renderRide(){
+ const ride=lastRide;if(!ride)return;
  result.classList.remove('hidden');
  document.getElementById('trackingOrderNumber').textContent=ride.order_number;
  document.getElementById('trackingPickup').textContent=ride.pickup;
@@ -175,7 +187,7 @@ async function trackRide(){
  if(ride.driver_name){
   driverBox.classList.remove('hidden');
   document.getElementById('trackingDriverName').textContent=ride.driver_name;
-  document.getElementById('trackingCarType').textContent=ride.car_type||'سيارة أجرة';
+  document.getElementById('trackingCarType').textContent=ride.car_type||t('default_car_type');
   document.getElementById('trackingCarNumber').textContent=ride.car_number||'—';
   document.getElementById('trackingDriverPhone').textContent=ride.driver_phone||'—';
   document.getElementById('callDriver').href='tel:'+ride.driver_phone;
@@ -186,5 +198,6 @@ async function trackRide(){
 form.addEventListener('submit',async event=>{event.preventDefault();await trackRide()});
 if(queryOrder&&queryPhone)trackRide();
 setInterval(()=>{if(!result.classList.contains('hidden'))trackRide()},10000);
+document.addEventListener('mashwarlangchange',()=>{if(lastRide)renderRide()});
 </script>
 </body></html>
