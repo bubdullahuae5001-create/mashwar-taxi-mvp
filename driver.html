@@ -50,8 +50,7 @@
 <div><strong id="consentTitle" data-i18n="consent_title">الإقرارات والشروط الإلزامية</strong><small data-i18n="consent_sub">لن يُنشأ الحساب دون الموافقة على جميع البنود.</small></div>
 <button id="openTerms" class="terms-link" type="button" data-i18n="open_terms_btn">قراءة الشروط كاملة</button>
 </div>
-<label class="terms"><input name="data_declaration" type="checkbox" required><span data-i18n="consent1">أقر بأن جميع بياناتي ووثائقي وبيانات المركبة صحيحة وسارية، وأوافق على مراجعتها والتحقق منها من قبل إدارة مشوار.</span></label>
-<label class="terms"><input name="transport_terms" type="checkbox" required><span><span data-i18n="consent2_pre">قرأت ووافقت على</span> <button id="inlineTerms" class="inline-link" type="button" data-i18n="consent2_link">شروط وضوابط نقل الركاب وسياسة استخدام منصة مشوار</button><span data-i18n="consent2_post">، وأتعهد بالالتزام بها.</span></span></label>
+<label class="terms"><input name="agree_all" type="checkbox" required><span><span data-i18n="consent_combined_pre">أقر بأن جميع بياناتي وبيانات المركبة صحيحة وسارية، وأوافق على مراجعتها والتحقق منها من قبل إدارة مشوار، وقرأت ووافقت على</span> <button id="inlineTerms" class="inline-link" type="button" data-i18n="consent2_link">شروط وضوابط نقل الركاب وسياسة استخدام منصة مشوار</button><span data-i18n="consent_combined_post">وأتعهد بالالتزام بها.</span></span></label>
 </section>
 <div id="registerError" class="error hidden"></div>
 <button class="primary" type="submit" data-i18n="register_submit">إنشاء حساب السائق</button>
@@ -60,25 +59,7 @@
 
 <dialog id="termsDialog" class="terms-dialog" aria-labelledby="termsDialogTitle">
 <div class="terms-dialog-head"><div><span>مشوار</span><h2 id="termsDialogTitle" data-i18n="terms_dialog_title">شروط وضوابط تسجيل السائق ونقل الركاب</h2></div><button id="closeTermsX" type="button" aria-label="إغلاق">×</button></div>
-<div class="terms-content">
-<p class="terms-notice" data-i18n="terms_notice"><strong>تنبيه مهم:</strong> التسجيل في منصة مشوار لا يُعد ترخيصًا حكوميًا لمزاولة نشاط نقل الركاب، ولا يُفعّل الحساب إلا بعد اعتماد الإدارة والتحقق من أهلية السائق والمركبة.</p>
-<p class="terms-version" data-i18n="terms_lang_note" style="margin-bottom:12px">المحتوى القانوني أدناه معروض باللغة العربية فقط حاليًا.</p>
-<ol>
-<li><strong>الأهلية والتراخيص:</strong> أتعهد بأنني مستوفٍ لجميع التراخيص والتصاريح والموافقات الرسمية اللازمة لنقل الركاب في الإمارة، وأنها سارية طوال فترة استخدام المنصة.</li>
-<li><strong>صحة البيانات:</strong> أتحمل المسؤولية عن صحة بيانات الهوية ورخصة القيادة وتصريح مزاولة المهنة وملكية المركبة والتأمين وأي مستندات مقدمة.</li>
-<li><strong>المركبة:</strong> ألتزم باستخدام المركبة المعتمدة في الحساب فقط، والمحافظة على سلامتها ونظافتها وصلاحيتها الفنية، وعدم تغييرها قبل موافقة الإدارة.</li>
-<li><strong>السلامة:</strong> ألتزم بقوانين المرور والسرعات المحددة وعدم القيادة تحت تأثير أي مادة أو أثناء الإرهاق أو استخدام الهاتف بما يعرّض الركاب للخطر.</li>
-<li><strong>سلوك السائق:</strong> أتعامل مع الركاب باحترام، وأمنع التمييز أو الإساءة أو التحرش أو التدخين أو أي تصرف غير مهني، وأحافظ على خصوصيتهم وممتلكاتهم.</li>
-<li><strong>تنفيذ الرحلات:</strong> لا أقبل طلبًا إلا إذا كنت قادرًا على تنفيذه، وأحدّث حالة الرحلة بدقة من القبول حتى انتهائها.</li>
-<li><strong>الأجرة والمدفوعات:</strong> ألتزم بالتعرفة والرسوم المعتمدة، ولا أطلب مبالغ إضافية غير مستحقة أو أتحايل على المنصة.</li>
-<li><strong>الحوادث والشكاوى:</strong> أبلغ الإدارة والجهات المختصة فورًا عن الحوادث أو الطوارئ أو الشكاوى الجسيمة، وأتعاون في التحقيق.</li>
-<li><strong>الخصوصية:</strong> أستخدم بيانات العميل لتنفيذ الرحلة فقط، ولا أحفظها أو أنشرها أو أتواصل معه بعد الرحلة لغير غرض مشروع.</li>
-<li><strong>التعليق والإلغاء:</strong> يحق لإدارة مشوار رفض الطلب أو تعليق الحساب أو إيقافه عند انتهاء المستندات أو مخالفة الشروط أو ورود شكوى خطرة.</li>
-<li><strong>المسؤولية:</strong> أتحمل مسؤولية مخالفاتي وأفعالي أثناء القيادة، وأقر بأن مشوار منصة تقنية لتنظيم الطلبات وليست بديلًا عن الترخيص أو التأمين.</li>
-<li><strong>التحديثات:</strong> أوافق على تطبيق النسخة السارية من الشروط، وسيُطلب مني قبول أي تعديل جوهري قبل مواصلة استقبال الطلبات.</li>
-</ol>
-<p class="terms-version">نسخة الشروط: MASHWAR-DRIVER-TERMS-2026-08-15</p>
-</div>
+<div class="terms-content" id="termsBody"></div>
 <div class="terms-dialog-actions"><button id="acceptTerms" class="primary" type="button" data-i18n="accept_terms_btn">قرأت الشروط وأوافق عليها</button><button id="closeTerms" class="secondary" type="button" data-i18n="close">إغلاق</button></div>
 </dialog>
 
@@ -162,5 +143,5 @@
 </section>
 
 </main>
-<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8"></script><script src="i18n.js"></script><script src="driver.js"></script>
+<script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8"></script><script src="i18n.js"></script><script src="terms-i18n.js"></script><script src="driver.js"></script>
 </body></html>
