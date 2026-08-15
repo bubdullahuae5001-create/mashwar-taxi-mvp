@@ -1,11 +1,12 @@
 const cfg=window.APP_CONFIG||{},sb=supabase.createClient(cfg.SUPABASE_URL,cfg.SUPABASE_ANON_KEY),$=id=>document.getElementById(id);
 let driver=null,vehicle=null,activeRide=null,polling=null;
-function showOnly(id){['authView','registrationSuccess','pendingView','suspendedView','driverView'].forEach(x=>$(x)?.classList.add('hidden'));$(id)?.classList.remove('hidden')}
+function showOnly(id){['authView','registrationSuccess','pendingView','suspendedView','driverView','settingsView'].forEach(x=>$(x)?.classList.add('hidden'));$(id)?.classList.remove('hidden')}
 function err(id,m){$(id).textContent=m;$(id).classList.remove('hidden')}function clear(id){$(id).classList.add('hidden')}
 function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function wa(p){p=String(p||'').replace(/\D/g,'');if(p.startsWith('0'))p='971'+p.slice(1);return p}
 function reference(id){return 'D-'+String(id||'').replace(/-/g,'').slice(0,8).toUpperCase()}
 function approval(s){return({pending:'قيد المراجعة',approved:'معتمد',rejected:'مرفوض',suspended:'موقوف'})[s]||s||'—'}
+function validPhone(v){return /^05\d{8}$/.test(String(v||'').trim())}
 const DRIVER_TERMS_VERSION='MASHWAR-DRIVER-TERMS-2026-08-15';
 const termsDialog=$('termsDialog');
 function openTerms(){termsDialog?.showModal()}
@@ -103,4 +104,81 @@ function renderRide(){
  $('activeRide').innerHTML=`<article class="ride-card"><strong>${esc(r.order_number)}</strong><div class="ride-grid"><div>العميل<b>${esc(r.customer_name)}</b></div><div>الهاتف<b>${esc(r.phone)}</b></div><div>الانطلاق<b>${esc(r.pickup)}</b></div><div>الوجهة<b>${esc(r.destination)}</b></div></div><div class="ride-actions"><a class="secondary" href="tel:${esc(r.phone)}">اتصال</a><a class="secondary" target="_blank" href="https://wa.me/${wa(r.phone)}">واتساب</a>${next?`<button class="primary" onclick="advanceRide('${r.id}','${next[0]}')">${next[1]}</button>`:''}</div></article>`
 }
 window.advanceRide=async(id,status)=>{const {error}=await sb.rpc('driver_update_ride_status',{p_ride_id:id,p_status:status});if(error)return alert(error.message);await refreshDriver()};
+
+/* ===== الإعدادات ===== */
+function populateSettingsForm(){
+ clear('profileSettingsError');clear('profileSettingsSuccess');
+ clear('vehicleSettingsError');clear('vehicleSettingsSuccess');
+ clear('emailSettingsError');clear('emailSettingsSuccess');
+ clear('passwordSettingsError');clear('passwordSettingsSuccess');
+ const pf=$('profileSettingsForm');
+ pf.name.value=driver?.name||'';pf.phone.value=driver?.phone||'';if(driver?.current_zone)pf.current_zone.value=driver.current_zone;
+ const vf=$('vehicleSettingsForm');
+ vf.make.value=vehicle?.make||'';vf.model.value=vehicle?.model||'';vf.model_year.value=vehicle?.model_year||'';vf.color.value=vehicle?.color||'';
+ $('passwordSettingsForm').reset();$('emailSettingsForm').reset();
+}
+$('settingsBtn').onclick=()=>{populateSettingsForm();showOnly('settingsView')};
+$('backToDashboard').onclick=()=>showOnly('driverView');
+
+$('profileSettingsForm').onsubmit=async e=>{
+ e.preventDefault();clear('profileSettingsError');clear('profileSettingsSuccess');
+ const fd=new FormData(e.currentTarget);
+ const name=String(fd.get('name')||'').trim(),phone=String(fd.get('phone')||'').trim(),zone=fd.get('current_zone');
+ if(!name){err('profileSettingsError','الاسم مطلوب.');return}
+ if(!validPhone(phone)){err('profileSettingsError','أدخل رقم هاتف إماراتي صحيح مثل 0501234567.');return}
+ const btn=e.currentTarget.querySelector('button[type="submit"]');const oldText=btn.textContent;btn.disabled=true;btn.textContent='جارٍ الحفظ...';
+ try{
+  const {error}=await sb.rpc('driver_update_profile',{p_name:name,p_phone:phone,p_current_zone:zone});
+  if(error){err('profileSettingsError',error.message);return}
+  await refreshDriver();
+  $('profileSettingsSuccess').textContent='تم حفظ بياناتك الأساسية بنجاح.';$('profileSettingsSuccess').classList.remove('hidden');
+ }catch(ex){err('profileSettingsError',ex.message||'تعذر الحفظ.')}
+ finally{btn.disabled=false;btn.textContent=oldText}
+};
+
+$('vehicleSettingsForm').onsubmit=async e=>{
+ e.preventDefault();clear('vehicleSettingsError');clear('vehicleSettingsSuccess');
+ const fd=new FormData(e.currentTarget);
+ const make=String(fd.get('make')||'').trim(),model=String(fd.get('model')||'').trim(),year=Number(fd.get('model_year')),color=String(fd.get('color')||'').trim();
+ if(!make||!model||!color){err('vehicleSettingsError','جميع الحقول مطلوبة.');return}
+ const btn=e.currentTarget.querySelector('button[type="submit"]');const oldText=btn.textContent;btn.disabled=true;btn.textContent='جارٍ الحفظ...';
+ try{
+  const {error}=await sb.rpc('driver_update_vehicle',{p_make:make,p_model:model,p_model_year:year,p_color:color});
+  if(error){err('vehicleSettingsError',error.message);return}
+  await refreshDriver();
+  $('vehicleSettingsSuccess').textContent='تم حفظ بيانات المركبة بنجاح.';$('vehicleSettingsSuccess').classList.remove('hidden');
+ }catch(ex){err('vehicleSettingsError',ex.message||'تعذر الحفظ.')}
+ finally{btn.disabled=false;btn.textContent=oldText}
+};
+
+$('emailSettingsForm').onsubmit=async e=>{
+ e.preventDefault();clear('emailSettingsError');clear('emailSettingsSuccess');
+ const fd=new FormData(e.currentTarget);
+ const newEmail=String(fd.get('new_email')||'').trim();
+ const btn=e.currentTarget.querySelector('button[type="submit"]');const oldText=btn.textContent;btn.disabled=true;btn.textContent='جارٍ الإرسال...';
+ try{
+  const {error}=await sb.auth.updateUser({email:newEmail});
+  if(error){err('emailSettingsError',error.message);return}
+  $('emailSettingsSuccess').textContent='تم إرسال رابط تأكيد إلى البريد الجديد. لن يتغيّر بريد الدخول قبل فتح الرابط.';$('emailSettingsSuccess').classList.remove('hidden');
+  e.currentTarget.reset();
+ }catch(ex){err('emailSettingsError',ex.message||'تعذر إرسال رابط التأكيد.')}
+ finally{btn.disabled=false;btn.textContent=oldText}
+};
+
+$('passwordSettingsForm').onsubmit=async e=>{
+ e.preventDefault();clear('passwordSettingsError');clear('passwordSettingsSuccess');
+ const fd=new FormData(e.currentTarget);
+ const p1=fd.get('new_password'),p2=fd.get('confirm_password');
+ if(p1.length<8){err('passwordSettingsError','كلمة المرور يجب ألا تقل عن 8 أحرف.');return}
+ if(p1!==p2){err('passwordSettingsError','كلمتا المرور غير متطابقتين.');return}
+ const btn=e.currentTarget.querySelector('button[type="submit"]');const oldText=btn.textContent;btn.disabled=true;btn.textContent='جارٍ التحديث...';
+ try{
+  const {error}=await sb.auth.updateUser({password:p1});
+  if(error){err('passwordSettingsError',error.message);return}
+  $('passwordSettingsSuccess').textContent='تم تحديث كلمة المرور بنجاح.';$('passwordSettingsSuccess').classList.remove('hidden');
+  e.currentTarget.reset();
+ }catch(ex){err('passwordSettingsError',ex.message||'تعذر تحديث كلمة المرور.')}
+ finally{btn.disabled=false;btn.textContent=oldText}
+};
+
 (async()=>{const {data}=await sb.auth.getSession();if(data.session)await routeUser();else showOnly('authView')})();
