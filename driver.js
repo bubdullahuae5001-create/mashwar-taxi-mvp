@@ -21,7 +21,7 @@ if(new URLSearchParams(location.search).get('register'))setTimeout(()=>$('regist
 $('registerForm').onsubmit=async e=>{
  e.preventDefault();clear('registerError');
  const formEl=e.currentTarget;const fd=new FormData(formEl);
- if(fd.get('data_declaration')!=='on'||fd.get('transport_terms')!=='on'){err('registerError','يجب قراءة الشروط والموافقة على الإقرارين قبل إنشاء الحساب.');return}
+ if(fd.get('agree_all')!=='on'){err('registerError','يجب قراءة الشروط والموافقة عليها قبل إنشاء الحساب.');return}
  const submitBtn=formEl.querySelector('button[type="submit"]');
  const oldBtnText=submitBtn?submitBtn.textContent:'';
  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent=t('register_sending')}
