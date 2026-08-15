@@ -21,6 +21,16 @@ button,input,select,textarea{font:inherit}
 .top-nav select{min-width:100px;background:#151b22;color:#fff;border:1px solid #303844;border-radius:9px;padding:9px 10px;cursor:pointer;outline:none;font-size:13px}
 .top-nav select:focus{border-color:var(--yellow)}
 
+/* last order bar */
+.last-order-bar{background:#12181f;border-bottom:1px solid #232a33}
+.last-order-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0}
+.last-order-text{font-size:13px;color:#dfe3e8;font-weight:700}
+.last-order-text b{color:var(--yellow)}
+.last-order-actions{display:flex;align-items:center;gap:10px}
+.last-order-link{color:#111;background:var(--yellow);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:900;text-decoration:none;white-space:nowrap}
+.last-order-close{background:transparent;border:0;color:#9aa3ad;font-size:18px;cursor:pointer;line-height:1;padding:4px;border-radius:6px}
+.last-order-close:hover{color:#fff;background:rgba(255,255,255,.06)}
+
 /* hero — bounded height, not full screen */
 .hero{position:relative;height:min(70vh,560px);min-height:400px;display:grid;align-items:center;overflow:hidden}
 .hero-bg{position:absolute;inset:0;background:url('uaq-hero.jpg') center 40%/cover no-repeat}
@@ -101,6 +111,8 @@ dialog::backdrop{background:rgba(0,0,0,.76);backdrop-filter:blur(5px)}
   .brand-name small{display:none}
   .track-link{font-size:12px;padding:8px 10px}
   .top-nav select{min-width:84px;padding:8px;font-size:12px}
+  .last-order-inner{flex-wrap:wrap;padding:9px 0}
+  .last-order-text{font-size:12px}
   .hero{height:auto;min-height:0;padding:44px 0 40px}
   .hero-bg{background-position:44% center}
   .hero-shade{background:linear-gradient(180deg,rgba(5,7,10,.3),rgba(5,7,10,.86) 75%,rgba(5,7,10,.97))}
