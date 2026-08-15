@@ -96,7 +96,7 @@
 </section>
 
 <section id="driverView" class="hidden">
-<section class="dashboard-hero"><div><span class="eyebrow">MASHWAR DRIVER</span><h1>لوحة السائق</h1><p id="driverHello"></p></div><button id="logoutBtn" class="secondary">تسجيل الخروج</button></section>
+<section class="dashboard-hero"><div><span class="eyebrow">MASHWAR DRIVER</span><h1>لوحة السائق</h1><p id="driverHello"></p></div><div style="display:flex;gap:8px"><button id="settingsBtn" class="secondary">الإعدادات</button><button id="logoutBtn" class="secondary">تسجيل الخروج</button></div></section>
 <div class="stats"><article><small>حالة الاعتماد</small><strong id="approvalStat"></strong></article><article><small>الاشتراك</small><strong id="subscriptionStat"></strong></article><article><small>حالة السائق</small><strong id="availabilityStat"></strong></article></div>
 
 <section class="dashboard-card"><div class="card-head"><div><h2>استقبال الطلبات</h2><p>حدد منطقتك ثم فعّل حالتك.</p></div></div><div class="availability-row"><select id="zoneSelect"><option>أم القيوين - المدينة</option><option>السلمة</option><option>الراس</option><option>الدر البيضاء</option><option>فلج المعلا</option><option>كورنيش أم القيوين</option><option>المنطقة الصناعية</option><option>أخرى</option></select><button id="availabilityBtn" class="primary">أصبح متاحًا</button></div></section>
@@ -104,6 +104,62 @@
 <section class="dashboard-card"><div class="card-head"><div><h2>الطلبات الجديدة</h2><p>العروض التي أرسلها النظام إليك.</p></div><button id="refreshBtn" class="secondary">تحديث</button></div><div id="offers"></div></section>
 <section class="dashboard-card"><div class="card-head"><div><h2>الرحلة الحالية</h2><p>بيانات العميل ومراحل الرحلة.</p></div></div><div id="activeRide"></div></section>
 </section>
+
+<section id="settingsView" class="hidden">
+<section class="dashboard-hero"><div><span class="eyebrow">MASHWAR DRIVER</span><h1>الإعدادات</h1><p>تحديث بياناتك الأساسية وكلمة المرور.</p></div><button id="backToDashboard" class="secondary">رجوع للوحة</button></section>
+
+<section class="dashboard-card">
+<div class="card-head"><div><h2>البيانات الأساسية</h2><p>الاسم، رقم الهاتف، ومنطقة العمل.</p></div></div>
+<form id="profileSettingsForm" class="driver-form">
+<div class="grid">
+<label>الاسم الكامل<input name="name" required></label>
+<label>رقم الهاتف<input name="phone" type="tel" dir="ltr" required></label>
+</div>
+<label>منطقة العمل<select name="current_zone"><option>أم القيوين - المدينة</option><option>السلمة</option><option>الراس</option><option>الدر البيضاء</option><option>فلج المعلا</option><option>كورنيش أم القيوين</option><option>المنطقة الصناعية</option><option>أخرى</option></select></label>
+<div id="profileSettingsError" class="error hidden"></div>
+<div id="profileSettingsSuccess" class="error hidden" style="background:#153c28;color:#4ee195"></div>
+<button class="primary" type="submit">حفظ البيانات الأساسية</button>
+</form>
+</section>
+
+<section class="dashboard-card">
+<div class="card-head"><div><h2>بيانات المركبة</h2><p>الشركة المصنعة، الموديل، سنة الصنع، اللون.</p></div></div>
+<form id="vehicleSettingsForm" class="driver-form">
+<div class="grid">
+<label>الشركة المصنعة<input name="make" required></label>
+<label>الموديل<input name="model" required></label>
+<label>سنة الصنع<input name="model_year" type="number" min="2000" max="2035" required></label>
+<label>لون المركبة<input name="color" required></label>
+</div>
+<p class="muted">لتغيير رقم اللوحة أو إمارة اللوحة، تواصل مع إدارة مشوار مباشرة.</p>
+<div id="vehicleSettingsError" class="error hidden"></div>
+<div id="vehicleSettingsSuccess" class="error hidden" style="background:#153c28;color:#4ee195"></div>
+<button class="primary" type="submit">حفظ بيانات المركبة</button>
+</form>
+</section>
+
+<section class="dashboard-card">
+<div class="card-head"><div><h2>البريد الإلكتروني</h2><p>تغيير بريد الدخول — يتطلب تأكيدًا من صندوق البريد الجديد.</p></div></div>
+<form id="emailSettingsForm" class="driver-form">
+<label>البريد الإلكتروني الجديد<input name="new_email" type="email" required></label>
+<div id="emailSettingsError" class="error hidden"></div>
+<div id="emailSettingsSuccess" class="error hidden" style="background:#153c28;color:#4ee195"></div>
+<button class="primary" type="submit">إرسال رابط التأكيد</button>
+</form>
+</section>
+
+<section class="dashboard-card">
+<div class="card-head"><div><h2>كلمة المرور</h2><p>يفضّل استخدام كلمة مرور قوية غير مستخدمة بمواقع أخرى.</p></div></div>
+<form id="passwordSettingsForm" class="driver-form">
+<label>كلمة المرور الجديدة<input name="new_password" type="password" minlength="8" required></label>
+<label>تأكيد كلمة المرور<input name="confirm_password" type="password" minlength="8" required></label>
+<div id="passwordSettingsError" class="error hidden"></div>
+<div id="passwordSettingsSuccess" class="error hidden" style="background:#153c28;color:#4ee195"></div>
+<button class="primary" type="submit">تحديث كلمة المرور</button>
+</form>
+</section>
+</section>
+
 </main>
 <script src="config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8"></script><script src="driver.js"></script>
 </body></html>
