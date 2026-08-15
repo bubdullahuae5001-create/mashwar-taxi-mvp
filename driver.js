@@ -18,13 +18,24 @@ $('registerTab').onclick=()=>{$('registerForm').classList.remove('hidden');$('lo
 if(new URLSearchParams(location.search).get('register'))setTimeout(()=>$('registerTab').click(),0);
 
 $('registerForm').onsubmit=async e=>{
- e.preventDefault();clear('registerError');const fd=new FormData(e.currentTarget);
+ e.preventDefault();clear('registerError');
+ const formEl=e.currentTarget;const fd=new FormData(formEl);
  if(fd.get('data_declaration')!=='on'||fd.get('transport_terms')!=='on'){err('registerError','يجب قراءة الشروط والموافقة على الإقرارين قبل إنشاء الحساب.');return}
- const consentAt=new Date().toISOString();
- const metadata={account_type:'driver',full_name:String(fd.get('full_name')).trim(),phone:String(fd.get('phone')).trim(),driving_license_no:String(fd.get('driving_license_no')).trim(),driving_license_expiry:fd.get('driving_license_expiry')||null,taxi_permit_no:String(fd.get('taxi_permit_no')||'').trim(),current_zone:fd.get('current_zone'),plate_number:String(fd.get('plate_number')).trim(),plate_emirate:fd.get('plate_emirate'),vehicle_make:String(fd.get('vehicle_make')).trim(),vehicle_model:String(fd.get('vehicle_model')).trim(),model_year:Number(fd.get('model_year')),vehicle_color:String(fd.get('vehicle_color')).trim(),registration_expiry:fd.get('registration_expiry')||null,insurance_expiry:fd.get('insurance_expiry')||null,data_declaration_accepted:true,transport_terms_accepted:true,terms_version:DRIVER_TERMS_VERSION,terms_accepted_at:consentAt};
- const {data,error}=await sb.auth.signUp({email:String(fd.get('email')).trim(),password:fd.get('password'),options:{data:metadata}});
- if(error){err('registerError',error.message.toLowerCase().includes('already registered')?'هذا البريد الإلكتروني مسجل مسبقًا. استخدم دخول السائق.':error.message);return}
- e.currentTarget.reset();$('driverReference').textContent=reference(data.user?.id);showOnly('registrationSuccess');
+ const submitBtn=formEl.querySelector('button[type="submit"]');
+ const oldBtnText=submitBtn?submitBtn.textContent:'';
+ if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='جارٍ إنشاء الحساب...'}
+ try{
+  const consentAt=new Date().toISOString();
+  const metadata={account_type:'driver',full_name:String(fd.get('full_name')).trim(),phone:String(fd.get('phone')).trim(),driving_license_no:String(fd.get('driving_license_no')).trim(),driving_license_expiry:fd.get('driving_license_expiry')||null,taxi_permit_no:String(fd.get('taxi_permit_no')||'').trim(),current_zone:fd.get('current_zone'),plate_number:String(fd.get('plate_number')).trim(),plate_emirate:fd.get('plate_emirate'),vehicle_make:String(fd.get('vehicle_make')).trim(),vehicle_model:String(fd.get('vehicle_model')).trim(),model_year:Number(fd.get('model_year')),vehicle_color:String(fd.get('vehicle_color')).trim(),registration_expiry:fd.get('registration_expiry')||null,insurance_expiry:fd.get('insurance_expiry')||null,data_declaration_accepted:true,transport_terms_accepted:true,terms_version:DRIVER_TERMS_VERSION,terms_accepted_at:consentAt};
+  const {data,error}=await sb.auth.signUp({email:String(fd.get('email')).trim(),password:fd.get('password'),options:{data:metadata}});
+  if(error){err('registerError',error.message.toLowerCase().includes('already registered')?'هذا البريد الإلكتروني مسجل مسبقًا. استخدم دخول السائق.':error.message);return}
+  try{await sb.auth.signOut();}catch(e2){console.error('sign-out after register failed:',e2)}
+  formEl.reset();$('driverReference').textContent=reference(data.user?.id);showOnly('registrationSuccess');
+ }catch(fatalError){
+  err('registerError','حدث خطأ غير متوقع: '+(fatalError.message||'تعذر إتمام التسجيل. حاول مرة أخرى.'));
+ }finally{
+  if(submitBtn){submitBtn.disabled=false;submitBtn.textContent=oldBtnText}
+ }
 };
 
 $('goLogin').onclick=async()=>{await sb.auth.signOut();showOnly('authView');$('loginTab').click()};
@@ -44,21 +55,45 @@ async function routeUser(){
  if(['suspended','rejected'].includes(d.approval_status)||['suspended','rejected'].includes(vehicle.approval_status)){showOnly('suspendedView');return}
  if(d.approval_status!=='approved'||vehicle.approval_status!=='approved'){showOnly('pendingView');return}
  showOnly('driverView');renderDriver();await Promise.all([loadOffers(),loadActiveRide()]);
- if(polling)clearInterval(polling);polling=setInterval(async()=>{try{await sb.rpc('refresh_dispatches');await refreshDriver()}catch(e){console.error(e)}},10000);
+ if(polling)clearInterval(polling);polling=setInterval(async()=>{try{const {error}=await sb.rpc('refresh_dispatches');if(error)console.error('refresh_dispatches error:',error.message);await refreshDriver()}catch(e){console.error(e)}},10000);
 }
 function renderDriver(){
  $('driverHello').textContent=`مرحبًا ${driver.name||''}`;$('approvalStat').textContent=approval(driver.approval_status);
  $('subscriptionStat').textContent=driver.subscription_status==='trial'&&driver.trial_ends_at?`تجربة حتى ${new Date(driver.trial_ends_at).toLocaleDateString('ar-AE')}`:(driver.subscription_status||'—');
- $('availabilityStat').textContent=driver.is_busy?'في رحلة':driver.is_available?'متاح':'غير متاح';$('availabilityBtn').textContent=driver.is_available?'إيقاف استقبال الطلبات':'أصبح متاحًا';if(driver.current_zone)$('zoneSelect').value=driver.current_zone
+ $('availabilityStat').textContent=driver.is_busy?'في رحلة':driver.is_available?'متاح':'غير متاح';$('availabilityBtn').textContent=driver.is_available?'إيقاف استقبال الطلبات':'استقبل الطلبات';if(driver.current_zone)$('zoneSelect').value=driver.current_zone
 }
 async function refreshDriver(){const {data:u}=await sb.auth.getUser();if(!u.user)return;const {data:d}=await sb.from('drivers').select('*').eq('user_id',u.user.id).maybeSingle();if(!d)return;driver=d;const {data:v}=await sb.from('vehicles').select('*').eq('driver_id',d.id).order('created_at',{ascending:false}).limit(1);vehicle=v?.[0]||null;if(d.approval_status!=='approved'||vehicle?.approval_status!=='approved'){await routeUser();return}renderDriver();await Promise.all([loadOffers(),loadActiveRide()])}
 $('availabilityBtn').onclick=async()=>{const {error}=await sb.rpc('set_driver_availability',{p_available:!driver.is_available,p_zone:$('zoneSelect').value});if(error)return alert(error.message);await refreshDriver()};
-$('refreshBtn').onclick=async()=>{await sb.rpc('refresh_dispatches');await refreshDriver()};
+$('refreshBtn').onclick=async()=>{
+ const btn=$('refreshBtn');const oldText=btn.textContent;btn.disabled=true;btn.textContent='جارٍ التحديث...';
+ try{
+  const {error}=await sb.rpc('refresh_dispatches');
+  if(error){alert('تعذر التحديث: '+error.message);return}
+  await refreshDriver();
+ }catch(e){alert('تعذر التحديث: '+(e.message||'خطأ غير متوقع'))}
+ finally{btn.disabled=false;btn.textContent=oldText}
+};
+
+let lastOfferCount=0;
+function playNewOfferSound(){
+ try{
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const o=ctx.createOscillator(),g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.type='sine';o.frequency.value=880;
+  g.gain.setValueAtTime(0.25,ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
+  o.start();o.stop(ctx.currentTime+0.6);
+ }catch(e){console.error('sound error',e)}
+}
 
 async function loadOffers(){
- const {data,error}=await sb.from('ride_offers').select('id,ride_id,offer_status,expires_at,ride_requests(*)').eq('driver_id',driver.id).eq('offer_status','offered').gt('expires_at',new Date().toISOString()).order('offered_at',{ascending:false});
+ const {data,error}=await sb.rpc('get_driver_offers');
  if(error){console.error(error);return}
- $('offers').innerHTML=(data||[]).length?(data||[]).map(o=>{const r=o.ride_requests;return `<article class="ride-card"><strong>طلب ${esc(r.order_number)}</strong><div class="ride-grid"><div>الانطلاق<b>${esc(r.pickup)}</b></div><div>الوجهة<b>${esc(r.destination)}</b></div><div>المنطقة<b>${esc(r.pickup_zone||'—')}</b></div><div>الركاب<b>${esc(r.passengers)}</b></div></div><div class="ride-actions"><button class="primary" onclick="acceptRide('${r.id}')">قبول الطلب</button></div></article>`}).join(''):'<div class="empty-state"><strong>لا توجد طلبات جديدة</strong></div>'
+ const list=data||[];
+ if(list.length>lastOfferCount)playNewOfferSound();
+ lastOfferCount=list.length;
+ $('offers').innerHTML=list.length?list.map(o=>`<article class="ride-card"><strong>طلب ${esc(o.order_number)}</strong><div class="ride-grid"><div>الانطلاق<b>${esc(o.pickup)}</b></div><div>الوجهة<b>${esc(o.destination)}</b></div><div>المنطقة<b>${esc(o.pickup_zone||'—')}</b></div><div>الركاب<b>${esc(o.passengers)}</b></div></div><div class="ride-actions"><button class="primary" onclick="acceptRide('${o.ride_id}')">قبول الطلب</button></div></article>`).join(''):'<div class="empty-state"><strong>لا توجد طلبات جديدة</strong></div>'
 }
 window.acceptRide=async id=>{const {error}=await sb.rpc('accept_ride',{p_ride_id:id});if(error){alert(error.message);return}await refreshDriver()};
 async function loadActiveRide(){const {data,error}=await sb.from('ride_requests').select('*').eq('driver_id',driver.id).in('status',['accepted','on_the_way','arrived','started']).order('accepted_at',{ascending:false}).limit(1);if(error)return console.error(error);activeRide=data?.[0]||null;renderRide()}
