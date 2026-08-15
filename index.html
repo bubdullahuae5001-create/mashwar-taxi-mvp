@@ -6,6 +6,16 @@
   <nav class="top-nav" aria-label="التنقل الرئيسي"><a class="track-link" href="track.html">تتبع طلبك</a><select id="languageSelect" aria-label="اللغة"><option value="ar">العربية</option><option value="en">English</option><option value="ur">اردو</option></select></nav>
 </div></header>
 
+<div id="lastOrderBar" class="last-order-bar hidden">
+  <div class="container last-order-inner">
+    <span class="last-order-text" id="lastOrderText">لديك طلب سابق: <b id="lastOrderNumber"></b></span>
+    <div class="last-order-actions">
+      <a id="lastOrderTrack" class="last-order-link" href="track.html">تتبع الطلب</a>
+      <button id="lastOrderClose" class="last-order-close" type="button" aria-label="إغلاق">×</button>
+    </div>
+  </div>
+</div>
+
 <main>
 <section class="hero">
   <div class="hero-bg"></div><div class="hero-shade"></div>
